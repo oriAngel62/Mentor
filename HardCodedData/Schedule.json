@@ -13,7 +13,7 @@
                     "name": "Mission 1",
                     "description": "Mission 1 Description",
                     "category": "Category 1",
-                    "start": "10:00",
+                    "start": 10.00,
                     "length": 1,
                     "priority": 1,
                     "isCompleted": false
