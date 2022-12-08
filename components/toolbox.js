@@ -3,8 +3,8 @@
 //add mission
 
 import { useState } from "react";
-import data from "HardCodedData/Schedule.json";
-import "./toolbox.css";
+import data from "../HardCodedData/Schedule.json";
+//import styles from "./toolbox.css";
 
 function toolbox(){
 
@@ -15,7 +15,7 @@ function toolbox(){
     };
   
     return (
-      <div className="container">
+      <div className= "container">
         <div className="bloc-tabs">
           <button
             className={toggleState === 1 ? "tabs active-tabs" : "tabs"}

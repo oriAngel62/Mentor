@@ -15,10 +15,5 @@ import toolbox from "../components/toolbox"
 //}
 
 export default function Home({ allPostsData }) {
-    return (
-    <div>
-    <Link href="./schedule">david</Link>
-    <toolbox/>
-    </div>
-    );
+    return  <Link href="./schedule">david</Link>;
 }

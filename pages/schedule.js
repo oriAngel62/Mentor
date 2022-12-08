@@ -22,10 +22,16 @@ export default function Post({ data }) {
     console.log(data);
     return (
         <div>
+           
             <Table striped bordered hover>
                 <tbody>
-                    <tr></tr>
-                    <tr></tr>
+                    <tr>
+                        days here!
+                    </tr>
+                    <tr>
+                        <Toolbox/>
+                    </tr>
+                    
                 </tbody>
             </Table>
         </div>
