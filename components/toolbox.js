@@ -80,4 +80,4 @@ function toolbox(){
     );
   }
   
-  export default Tabs;
+  export default toolbox;
