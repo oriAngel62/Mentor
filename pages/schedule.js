@@ -4,6 +4,8 @@ import Head from "next/head";
 import Table from "react-bootstrap/Table";
 import Toolbox from "../components/toolbox";
 import data from "../HardCodedData/Schedule.json";
+
+import Mission from "../components/misssion";
 // import day from "../components/day";
 //query to data
 export async function getStaticProps({ params }) {
@@ -19,21 +21,18 @@ export async function getStaticProps({ params }) {
 // }
 
 export default function Post({ data }) {
-    console.log(data);
+    // console.log(data);
     return (
         <div>
-           
             <Table striped bordered hover>
                 <tbody>
+                    <tr>days here!</tr>
                     <tr>
-                        days here!
+                        <Toolbox />
                     </tr>
-                    <tr>
-                        <Toolbox/>
-                    </tr>
-                    
                 </tbody>
             </Table>
+            <Mission missionData={data.days[0].missionList[0]} />
         </div>
     );
 }
