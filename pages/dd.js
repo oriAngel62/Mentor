@@ -4,6 +4,6 @@ import { appointments } from '../public/demo_data/month_appointments';
 
 export default function Dd() {
     return (
-      <ToolBox appointments={appointments} />
+      <Demo appointments={appointments} />
     )
   }
