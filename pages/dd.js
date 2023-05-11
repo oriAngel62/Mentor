@@ -1,8 +1,9 @@
 import Demo from "../components/sched"
+import ToolBox from "../components/toolBox";
 import { appointments } from '../public/demo_data/month_appointments';
 
 export default function Dd() {
     return (
-      <Demo appointments={appointments} />
+      <ToolBox appointments={appointments} />
     )
   }
