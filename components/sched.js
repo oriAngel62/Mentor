@@ -23,7 +23,7 @@ import {
 import { useState } from 'react';
 import { useKeyPress } from './hooks';
 import CheckSelect from './checkSelect';
-
+import UnassignedForm from './unassignedFrom';
 
 export default function Demo({ appointments }) {
     const [data, setData] = useState(appointments.map((appointment, index) => (
@@ -113,56 +113,12 @@ export default function Demo({ appointments }) {
     
       return (
         <AppointmentForm.BasicLayout
-          appointmentData={appointmentData}
-          onFieldChange={onFieldChange}
-          {...restProps}
-        >
-          <AppointmentForm.Label
-            text="Description"
-            type="title"
-          />
-          <AppointmentForm.TextEditor
-            value={appointmentData.description}
-            onValueChange={onDescriptionChange}
-            placeholder="Description"
-          />
-          <AppointmentForm.Label
-            text="Deadline"
-            type="titleLabel"
-          />
-          <AppointmentForm.DateEditor
-            value={appointmentData.deadline}
-            onValueChange={onDeadlineChange}
-          />
-          <CheckSelect useNset={[dayName, setDayName]}/>
-          <Box sx={{ width: 300 }}>
-            <Slider
-              marks={marks}
-              getAriaLabel={() => 'Temperature range'}
-              value={interval}
-              onChange={onSliderChange}
-              valueLabelDisplay="auto"
-              getAriaValueText={valuetext}
-              step={0.25}
-              min={9.00}
-              max={20.00}
-            />
-          </Box>
-          <Box sx={{ width: 300 }}>
-            <Slider
-              marks
-              onChange={onRankChange}
-              valueLabelDisplay="auto"
-              step={0.1}
-              min={1}
-              max={10}
-            />
-          </Box>
-          <AppointmentForm.Select
-            onValueChange={onSelectChange}
-            availableOptions={[{id: 0, text: "Low"}, {id: 1, text: "Medium"}, {id: 2, text: "High"}]}
-          />
-        </AppointmentForm.BasicLayout>
+        appointmentData={appointmentData}
+        onFieldChange={onFieldChange}
+        {...restProps}
+      >
+        <UnassignedForm appointmentData={appointmentData} onFieldChange={onFieldChange}/>
+      </AppointmentForm.BasicLayout>
       );
     };
 
