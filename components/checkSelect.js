@@ -42,7 +42,7 @@ export default function CheckSelect(props) {
   };
 
   return (
-      <FormControl sx={{ m: 1, width: 300 }}>
+      <FormControl sx={{ width: 400 }}>
         <InputLabel id="demo-multiple-checkbox-label">Optional Days</InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"

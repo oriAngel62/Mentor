@@ -13,6 +13,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
+import { useState } from 'react';
+import { Backdrop, backdropClasses } from '@mui/material';
+import { set } from 'date-fns';
+import MissionForm from './missionForm';
 
 const style = {
     position: 'absolute',
@@ -32,8 +36,7 @@ const Demo = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
 }));
 
-export default function ToolBox({ appointments }) {
-
+export default function ToolBox({ data, setData }) {
     const [checked, setChecked] = React.useState([0]);
 
     const [open, setOpen] = React.useState(false);
@@ -57,11 +60,29 @@ export default function ToolBox({ appointments }) {
         setChecked(newChecked);
     };
 
-    const listItems = appointments.map((appointment, index) => {
-        const labelId = `checkbox-list-label-${index}`;
+    const [interval, setInterval] = useState([20, 37]);
+    const [dayName, setDayName] = useState([]);
+
+    const onDescriptionChange = (nextValue) => {
+    appointmentData.description = nextValue;
+    };
+    const onDeadlineChange = (nextValue) => {
+    };
+    const onSelectChange = (nextValue) => {
+    };
+
+    const onSliderChange = (event, newValue) => {
+        setInterval(newValue);
+    };
+
+    const onRankChange = (nextValue) => {
+    };
+
+    const listItems = data.map((appointment, index) => {
+        const labelId = `checkbox-list-label-${appointment.id}`;
         return (
             <ListItem
-                    key={appointment}
+                    key={appointment.id}
                     secondaryAction={
                         <IconButton edge="end" aria-label="delete">
                             <DeleteIcon />
@@ -71,11 +92,11 @@ export default function ToolBox({ appointments }) {
                     <ListItemIcon>
                         <Checkbox
                         edge="start"
-                        checked={checked.indexOf(index) !== -1}
-                        tabIndex={-1}
+                        checked={checked.indexOf(appointment.id) !== -1}
+                        tabIndex={appointment.id}
                         disableRipple
                         inputProps={{ 'aria-labelledby': labelId }}
-                        onClick={handleToggle(index)}
+                        onClick={handleToggle(appointment.id)}
                         />
                     </ListItemIcon>
                     <ListItemButton role={undefined} onClick={handleOpen} dense>
@@ -87,15 +108,24 @@ export default function ToolBox({ appointments }) {
                     <Modal
                         open={open}
                         onClose={handleClose}
-                        aria-labelledby="child-modal-title"
-                        aria-describedby="child-modal-description"
+                        slots={{ backdrop: Backdrop }}
+                        slotProps={{
+                            backdrop: {
+                            sx: {
+                                borderColor: 'rgba(255, 255, 255, 0)',
+                                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                            },
+                            },
+                        }}
+                        aria-labelledby="modal-title"
                     >
-                        <Box sx={{ ...style, width: 200 }}>
-                        <h2 id="child-modal-title">Text in a child modal</h2>
-                        <p id="child-modal-description">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                        </p>
-                        <Button onClick={handleClose}>Close Child Modal</Button>
+                        <Box sx={{ ...style}}>
+                                <b id="modal-title">Mission Details</b>
+                                <MissionForm appointmentData={data} interval={interval} day={[dayName, setDayName]} onDeadlineChange={onDeadlineChange}
+                                onSliderChange={onSliderChange} onDescriptionChange={onDescriptionChange} onRankChange={onRankChange}
+                                onSelectChange={onSelectChange} isAssigned={false}
+                                />
+                                <Button onClick={handleClose}>Close Modal</Button>
                         </Box>
                     </Modal>
         </ListItem>

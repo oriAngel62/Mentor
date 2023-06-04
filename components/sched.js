@@ -1,6 +1,6 @@
 import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
+import Button from '@mui/material/Button';
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import { ViewState , EditingState, IntegratedEditing} from '@devexpress/dx-react-scheduler';
 import {
@@ -20,15 +20,24 @@ import {
   EditRecurrenceMenu,
   AllDayPanel,
 } from '@devexpress/dx-react-scheduler-material-ui';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useKeyPress } from './hooks';
-import CheckSelect from './checkSelect';
-import UnassignedForm from './unassignedFrom';
+import MissionForm from './missionForm';
+import ToolBox from './toolBox';
 
-export default function Demo({ appointments }) {
-    const [data, setData] = useState(appointments.map((appointment, index) => (
-      {id: index, ...appointment}
-    )));
+export default function Demo({ data, setData }) {
+  const [state, setState] = useState(false);
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setState(open);
+  };
     const isShift = useKeyPress("Shift");
     // const marks = [
     //   {
@@ -48,34 +57,15 @@ export default function Demo({ appointments }) {
     //     label: '100°C',
     //   },
     // ];
-    const aa = []
-    aa.length = 45;
-    console.log(aa);
-    const marks = aa.map((val, index) => {
-      let qwe = 9 + index * 0.25; 
-      // return {value: val, label: (~~val).toString() + ":" + (~~((val - ~~val) * 100 * 0.6)).toString()};
-      return {value: qwe, label: "9:00"};
-    });
-    console.log("marks:", marks);
-    const valuetext = (value) => {
-      return `${value}°C`;
-    };
-
-    const TextEditor = (props) => {
-      // eslint-disable-next-line react/destructuring-assignment
-      if (props.type === 'multilineTextEditor') {
-        return null;
-      }
-      return <AppointmentForm.TextEditor {...props} />;
-    };
-
-
     const Label = (props) => {
       // eslint-disable-next-line react/destructuring-assignment
-      if (props.type === "ordinaryLabel") {
+      const newProp = {...props};
+      if (props.text === "Details") {
+        newProp.text = "Mission Details";
+      } else if (props.text === "More Information") {
         return null;
       }
-      return <AppointmentForm.Label {...props} />;
+      return <AppointmentForm.Label {...newProp} />;
     };
 
     const Layout = (props) => {
@@ -86,38 +76,46 @@ export default function Demo({ appointments }) {
     };
     
     const BasicLayout = ({ onFieldChange, appointmentData, ...restProps }) => {
-      console.log(restProps);
-      const [dayName, setDayName] = useState([]);
+      console.log(restProps);      
       const [interval, setInterval] = useState([20, 37]);
+      const [dayName, setDayName] = useState([]);
+      const [rank, setRank] = useState(1);
 
-
-      console.log(dayName);
-      const [data, setData] = useState(0);
       const onDescriptionChange = (nextValue) => {
+        appointmentData.description = nextValue;
         onFieldChange({ description: nextValue });
+      };
+      const onTitleChange = (nextValue) => {
+        appointmentData.title = nextValue;
+        onFieldChange({ title: nextValue });
       };
       const onDeadlineChange = (nextValue) => {
         onFieldChange({ deadline: nextValue });
       };
       const onSelectChange = (nextValue) => {
-        onFieldChange({ value: nextValue });
-      };
-
-      const onSliderChange = (event, newValue) => {
-        setInterval(newValue);
-      };
-
-      const onRankChange = (nextValue) => {
-        onFieldChange({ value: nextValue });
+        onFieldChange({ priority: nextValue });
       };
     
+      const onSliderChange = (event, newValue) => {
+        setInterval(newValue);
+        onFieldChange({ optionalHours: newValue });
+      };
+    
+      const onRankChange = (event, nextValue) => {
+        setRank(nextValue);
+        onFieldChange({ rank: nextValue });
+      };
+
       return (
         <AppointmentForm.BasicLayout
         appointmentData={appointmentData}
         onFieldChange={onFieldChange}
         {...restProps}
       >
-        <UnassignedForm appointmentData={appointmentData} onFieldChange={onFieldChange}/>
+        <MissionForm onTitleChange={onTitleChange} appointmentData={appointmentData} interval={interval} day={[dayName, setDayName]} onDeadlineChange={onDeadlineChange}
+                        onSliderChange={onSliderChange} onDescriptionChange={onDescriptionChange} onRankChange={onRankChange}
+                        onSelectChange={onSelectChange} rank={rank}
+        />
       </AppointmentForm.BasicLayout>
       );
     };
@@ -174,7 +172,26 @@ export default function Demo({ appointments }) {
           />
           <MonthView />
 
-          <Toolbar />
+          <Toolbar flexibleSpaceComponent={()=> {
+            
+            return(
+              <Toolbar.Root>
+                <Button onClick={toggleDrawer(true)}>{"left"}</Button>
+                <SwipeableDrawer
+                  anchor={"left"}
+                  open={state}
+                  onClose={toggleDrawer(false)}
+                  onOpen={toggleDrawer(true)}
+                >
+                  <ToolBox data={data} setData={setData} />
+                </SwipeableDrawer>
+            </Toolbar.Root>
+              
+            );
+          }
+            
+          } />
+            
           <DateNavigator />
           <TodayButton />
           <ViewSwitcher />
@@ -187,10 +204,10 @@ export default function Demo({ appointments }) {
           />
           <AppointmentForm
             basicLayoutComponent={BasicLayout}
-            textEditorComponent={TextEditor}
+            textEditorComponent={()=>(null)}
             layoutComponent={Layout}
             labelComponent={Label}
-            booleanEditorComponent={()=>{return null}}
+            booleanEditorComponent={()=>{null}}
           />
           <AllDayPanel />
           <DragDropProvider
