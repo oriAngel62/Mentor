@@ -1,23 +1,29 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import { Field, Form, FormSpy } from 'react-final-form';
-import Typography from '/modules/components/Typography';
-import AppFooter from '/modules/views/AppFooter';
-import AppAppBar from '/modules/views/AppAppBar';
-import AppForm from '/modules/views/AppForm';
-import { email, required } from '/modules/form/validation';
-import RFTextField from '/modules/form/RFTextField';
-import FormButton from '/modules/form/FormButton';
-import FormFeedback from '/modules/form/FormFeedback';
-import withRoot from '/modules/withRoot';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
+import { Field, Form, FormSpy } from "react-final-form";
+import Typography from "/modules/components/Typography";
+import AppFooter from "/modules/views/AppFooter";
+import AppAppBar from "/modules/views/AppAppBar";
+import AppForm from "/modules/views/AppForm";
+import { email, required } from "/modules/form/validation";
+import RFTextField from "/modules/form/RFTextField";
+import FormButton from "/modules/form/FormButton";
+import FormFeedback from "/modules/form/FormFeedback";
+import withRoot from "/modules/withRoot";
+import { useRouter } from "next/router";
+import { FORM_ERROR } from "final-form";
 
 function SignUp() {
+  const router = useRouter();
   const [sent, setSent] = React.useState(false);
 
   const validate = (values) => {
-    const errors = required(['firstName', 'lastName', 'email', 'password'], values);
+    const errors = required(
+      ["userName", "fullName", "email", "password"],
+      values
+    );
 
     if (!errors.email) {
       const emailError = email(values.email);
@@ -29,8 +35,21 @@ function SignUp() {
     return errors;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (values) => {
     setSent(true);
+    const res = await fetch("http://localhost:7404/api/Users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    });
+    if (res.status === 200) {
+      router.push("/in/sign-in");
+    } else {
+      setSent(false);
+      return { [FORM_ERROR]: "User already exists" };
+    }
   };
 
   return (
@@ -42,7 +61,7 @@ function SignUp() {
             Sign Up
           </Typography>
           <Typography variant="body2" align="center">
-            <Link href="/sign-in" underline="always">
+            <Link href="/in/sign-in" underline="always">
               Already have an account?
             </Link>
           </Typography>
@@ -53,7 +72,12 @@ function SignUp() {
           validate={validate}
         >
           {({ handleSubmit: handleSubmit2, submitting }) => (
-            <Box component="form" onSubmit={handleSubmit2} noValidate sx={{ mt: 6 }}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit2}
+              noValidate
+              sx={{ mt: 6 }}
+            >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Field
@@ -62,8 +86,8 @@ function SignUp() {
                     disabled={submitting || sent}
                     autoComplete="given-name"
                     fullWidth
-                    label="First name"
-                    name="firstName"
+                    label="User name"
+                    name="userName"
                     required
                   />
                 </Grid>
@@ -73,8 +97,8 @@ function SignUp() {
                     disabled={submitting || sent}
                     autoComplete="family-name"
                     fullWidth
-                    label="Last name"
-                    name="lastName"
+                    label="Full name"
+                    name="fullName"
                     required
                   />
                 </Grid>
@@ -115,7 +139,7 @@ function SignUp() {
                 color="secondary"
                 fullWidth
               >
-                {submitting || sent ? 'In progress…' : 'Sign Up'}
+                {submitting || sent ? "In progress…" : "Sign Up"}
               </FormButton>
             </Box>
           )}
