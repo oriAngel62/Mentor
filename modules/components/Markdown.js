@@ -1,6 +1,5 @@
 import * as React from 'react';
-// import ReactMarkdown from 'markdown-to-jsx';
-import { MDXRemote } from '@mdx-js/react';
+import ReactMarkdown from 'markdown-to-jsx';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -46,5 +45,5 @@ const options = {
 };
 
 export default function Markdown(props) {
-  return <MDXRemote options={options} {...props} />;
+  return <ReactMarkdown options={options} {...props} />;
 }

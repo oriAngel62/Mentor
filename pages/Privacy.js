@@ -6,9 +6,10 @@ import Typography from '/modules/components/Typography';
 import AppAppBar from '/modules/views/AppAppBar';
 import AppFooter from '/modules/views/AppFooter';
 import withRoot from '/modules/withRoot';
-import privacy from '/modules/views/privacy.md';
+import { MdToString } from '/modules/lib/mdToString';
 
-function Privacy() {
+
+function Privacy({privacy}) {
   return (
     <React.Fragment>
       <AppAppBar />
@@ -23,6 +24,23 @@ function Privacy() {
       <AppFooter />
     </React.Fragment>
   );
+}
+
+export async function getStaticProps({ locale }) {
+  if (locale === 'en-US') {
+    const privacy = MdToString('privacy.md');
+    return {
+      props: {
+        privacy,
+      },
+    };
+  }
+  const privacy = MdToString('hprivacy.md');
+  return {
+    props: {
+      privacy,
+    },
+  };
 }
 
 export default withRoot(Privacy);

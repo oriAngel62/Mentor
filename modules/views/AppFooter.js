@@ -5,10 +5,10 @@ import Link from '@mui/material/Link';
 import Container from '@mui/material/Container';
 import Typography from '../components/Typography';
 import TextField from '../components/TextField';
+import { useRouter } from 'next/router';
 
-import Image from 'next/image';
-import appFooterFacebook from  "/public/images/appFooterFacebook.png";
-import appFooterTwitter from "/public/images/appFooterTwitter.png";
+
+
 
 function Copyright() {
   return (
@@ -41,12 +41,13 @@ const LANGUAGES = [
     name: 'English',
   },
   {
-    code: 'fr-FR',
-    name: 'Français',
+    code: 'he',
+    name: 'עברית',
   },
 ];
 
 export default function AppFooter() {
+  const router = useRouter();
   return (
     <Typography
       component="footer"
@@ -62,20 +63,6 @@ export default function AppFooter() {
               spacing={2}
               sx={{ height: 120 }}
             >
-              <Grid item sx={{ display: 'flex' }}>
-                <Box component="a" href="https://mui.com/" sx={iconStyle}>
-                  <Image
-                    src={appFooterFacebook}
-                    alt="Facebook"
-                  />
-                </Box>
-                <Box component="a" href="https://twitter.com/MUI_hq" sx={iconStyle}>
-                  <Image
-                    src={appFooterTwitter}
-                    alt="Twitter"
-                  />
-                </Box>
-              </Grid>
               <Grid item>
                 <Copyright />
               </Grid>
@@ -100,12 +87,17 @@ export default function AppFooter() {
             </Typography>
             <TextField
               select
+              defaultValue={router.locale}
               size="medium"
               variant="standard"
               SelectProps={{
                 native: true,
               }}
               sx={{ mt: 1, width: 150 }}
+              onChange={(event) => {
+                const locale = event.target.value;
+                router.push(router.pathname, router.asPath, { locale });
+              }}
             >
               {LANGUAGES.map((language) => (
                 <option value={language.code} key={language.code}>

@@ -1,11 +1,12 @@
+## **Mentor Privacy Policy**
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable -->
 
-Last modified: October 7th, 2018.
+Last modified: June 5, 2023.
 
 <!-- markdownlint-restore -->
 
-MUI is committed to protecting and respecting your privacy. This Privacy Policy sets out how we collect and process personal information about you when you visit the website mui.com, when you use our products and services (our "Services"), or when you otherwise do business or make contact with us.
+Mentor is committed to protecting and respecting your privacy. This Privacy Policy sets out how we collect and process personal information about you when you visit the website mentor.com, when you use our products and services (our "Services"), or when you otherwise do business or make contact with us.
 
 Please read this policy carefully to understand how we handle and treat your personal information.
 
@@ -13,10 +14,9 @@ Please read this policy carefully to understand how we handle and treat your per
 
 We may collect and process the following personal information from you:
 
-- **Information you provide to us:** We collect personal information when you voluntarily provide us with such information in the course of using our website or Services. For example, when you register to use our Services, we will collect your name, email address and organization information. We also collect personal information from you when you subscribe to our newsletter, or respond to a survey. If you make an enquiry through our website, or contact us in any other way, we will keep a copy of your communications with us.
-- **Information we collect when you do business with us:** We may process your personal information when you do business with us – for example, as a customer or prospective customer, or as a vendor, supplier, consultant or other third party. For example, we may hold your business contact information and financial account information (if any) and other communications you have with us for the purposes of maintaining our business relations with you.
+- **Information you provide to us:** We collect personal information when you voluntarily provide us with such information in the course of using our website or Services. For example, when you register to use our Services, we will collect your name and email address. We also collect personal information from you when you subscribe to our newsletter, or respond to a survey. If you make an enquiry through our website, or contact us in any other way, we will keep a copy of your communications with us.
 - **Information we automatically collect:** We may also collect certain technical information by automatic means when you visit our website, such as IP address, browser type and operating system, referring URLs, your use of our website, and other clickstream data. We collect this information automatically through the use of various technologies, such as cookies.
-- **Personal information where we act as a data processor:** We also process personal information on behalf of our customers in the context of supporting our products and services. Where a customer subscribes to our Services for their website, game or app, they will be the ones who control what event data is collected and stored on our systems. For example, they may ask us to log basic user data (e.g. email address or username), device identifiers, IP addresses, event type, and related source code. In such cases, we are data processors acting in accordance with the instructions of our customers. You will need to refer to the privacy policies of our customers to find out more about how such information is handled by them.
+- **Information we need for functionality:** We collect personal information you voluntarily provide use when you use our service, in order to provide full functionality. For example, we collect your schedule and timing prefernce.
 
 ## What do we use your information for?
 
@@ -58,19 +58,13 @@ However, if you choose to disable cookies, you may be unable to access certain p
 We will only share your information with third parties in certain circumstances:
 
 - We engage certain trusted third parties to perform functions and provide services to us, including cloud hosting services, off-site backups, email service providers, and customer support providers. We will only share your personal information with third parties to the extent necessary to perform these functions, in accordance with the purposes set out in this Privacy Policy and applicable laws.
-- In the event of a corporate sale, merger, reorganization, dissolution or similar event, your personal information may be sold, disposed of, transferred or otherwise disclosed as part of that transaction.
 - We may also disclose information about you to third parties where we believe it necessary or appropriate under law, for example: (1) to protect or defend our rights, interests or property or that of third parties; (2) to comply with legal process, judicial orders or subpoenas; (3) to respond to requests from public or government authorities, including for national security and law enforcement purposes; (4) to prevent or investigate possible wrongdoing in connection with the Services or to enforce our Terms of Service; (5) to protect the vital interests of our users, customers and other third parties.
-- We may use and share aggregated non-personal information with third parties for marketing, advertising and analytics purposes.
 
 We do not sell or trade your personal information to third parties.
 
 ## Third Party Links
 
 Occasionally, at our discretion, we may include or offer third party products or services on our website. If you access other websites using the links provided, the operators of these websites may collect information from you that will be used by them in accordance with their privacy policies. These third party sites have separate and independent privacy policies. We therefore have no responsibility or liability for the content and activities of these linked sites. Nonetheless, we seek to protect the integrity of our site and welcome any feedback about these sites.
-
-## International Transfers
-
-If you are visiting our website or using our Services from outside the United States (US), please be aware that you are sending personal information to the US where our servers are located. The US may not have data protection laws that are as comprehensive or protective as those in your country of residence; however, our collection, storage and use of your personal information will at all times be in accordance with this Privacy Policy.
 
 ## Your Rights
 
