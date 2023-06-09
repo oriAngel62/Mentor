@@ -5,7 +5,7 @@ import { HYDRATE } from "next-redux-wrapper";
 export const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    authState: "",
+    authState: false,
   },
   reducers: {
     setAuthState: (state, action) => {

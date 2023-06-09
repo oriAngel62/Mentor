@@ -13,13 +13,15 @@ import FormFeedback from "/modules/form/FormFeedback";
 import withRoot from "/modules/withRoot";
 import { FORM_ERROR } from "final-form";
 import { useRouter } from "next/router";
-import { useDispatch } from 'react-redux';
-import { setAuthState } from '/modules/model/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAuthState, selectAuthState } from '/modules/model/auth';
 
 function SignIn() {
   const router = useRouter();
   const [sent, setSent] = React.useState(false);
   const dispatch = useDispatch();
+  const authState = useSelector(selectAuthState);
+  console.log("Auth State SIGN-IN", authState);
 
 
   const validate = (values) => {
@@ -43,7 +45,8 @@ function SignIn() {
       setSent(false);
       return { [FORM_ERROR]: "Server error" };
     } else if (res.status === 200) {
-      dispatch(setAuthState("Bearer"));
+      const tokenJson = await res.json();
+      dispatch(setAuthState("Bearer " + tokenJson.token));
       router.push("/");
     } else {
       setSent(false);

@@ -13,6 +13,9 @@ const makeConfiguredStore = () =>
     configureStore({
         reducer: rootReducer,
         devTools: true,
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+            serializableCheck: false,
+        }),
     });
 
 export const makeStore = () => {
@@ -30,6 +33,9 @@ export const makeStore = () => {
         let store = configureStore({
         reducer: persistedReducer,
         devTools: process.env.NODE_ENV !== "production",
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+            serializableCheck: false,
+            }),
         });
         store.__persistor = persistStore(store); // Nasty hack
         return store;

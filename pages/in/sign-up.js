@@ -14,10 +14,14 @@ import FormFeedback from "/modules/form/FormFeedback";
 import withRoot from "/modules/withRoot";
 import { useRouter } from "next/router";
 import { FORM_ERROR } from "final-form";
+import { useSelector } from 'react-redux';
+import { selectAuthState } from '/modules/model/auth';
 
 function SignUp() {
   const router = useRouter();
   const [sent, setSent] = React.useState(false);
+  const authState = useSelector(selectAuthState);
+  console.log("Auth State SIGN-UP", authState);
 
   const validate = (values) => {
     const errors = required(
