@@ -10,28 +10,28 @@ import AppAppBar from '/modules/views/AppAppBar';
 import withRoot from '/modules/withRoot';
 import { useSelector } from 'react-redux';
 import { selectAuthState, setAuthState } from "/modules/model/auth";
-import appointments from "/public/demo_data/month_appointments.js";
-import Demo from '../modules/components/demo';
+// import appointments from "/public/demo_data/month_appointments.js";
+// import Demo from '../modules/components/demo';
 
 function Index() {
   const authState = useSelector(selectAuthState);
   console.log("Auth State INDEX", authState);
-  const [data, setData] = React.useState(appointments);
-  // return (
-  //   <React.Fragment>
-  //       <AppAppBar />
-  //       <ProductHero />
-  //       <ProductValues />
-  //       <ProductCategories />
-  //       <ProductHowItWorks />
-  //       <ProductCTA />
-  //       <ProductSmokingHero />
-  //       <AppFooter />
-  //   </React.Fragment>
-  // );
+  // const [data, setData] = React.useState(appointments);
   return (
-    <Demo data={data} setData={setData} />
+    <React.Fragment>
+        <AppAppBar />
+        <ProductHero />
+        <ProductValues />
+        <ProductCategories />
+        <ProductHowItWorks />
+        <ProductCTA />
+        <ProductSmokingHero />
+        <AppFooter />
+    </React.Fragment>
   );
+  // return (
+  //   <Demo data={data} setData={setData} />
+  // );
 }
 
 export default withRoot(Index);

@@ -25,7 +25,7 @@ function SignUp() {
 
   const validate = (values) => {
     const errors = required(
-      ["id", "fullName", "email", "password"],
+      ["id", "name", "email", "password"],
       values
     );
 
@@ -108,7 +108,7 @@ function SignUp() {
                     autoComplete="family-name"
                     fullWidth
                     label="Full name"
-                    name="fullName"
+                    name="name"
                     required
                   />
                 </Grid>
