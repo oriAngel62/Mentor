@@ -21,7 +21,7 @@ function SignUp() {
 
   const validate = (values) => {
     const errors = required(
-      ["userName", "fullName", "email", "password"],
+      ["id", "fullName", "email", "password"],
       values
     );
 
@@ -37,14 +37,20 @@ function SignUp() {
 
   const handleSubmit = async (values) => {
     setSent(true);
-    const res = await fetch("http://localhost:7404/api/Users", {
+    let flag = false;
+    const res = await fetch("https://localhost:7204/api/Users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
+    }).catch((err) => {
+      flag = true;
     });
-    if (res.status === 200) {
+    if (flag) {
+      setSent(false);
+      return { [FORM_ERROR]: "Server error" };
+    } else if (res.status === 200) {
       router.push("/in/sign-in");
     } else {
       setSent(false);
@@ -87,7 +93,7 @@ function SignUp() {
                     autoComplete="given-name"
                     fullWidth
                     label="User name"
-                    name="userName"
+                    name="id"
                     required
                   />
                 </Grid>

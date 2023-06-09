@@ -6,42 +6,45 @@ import Typography from "/modules/components/Typography";
 import AppFooter from "/modules/views/AppFooter";
 import AppAppBar from "/modules/views/AppAppBar";
 import AppForm from "/modules/views/AppForm";
-import { email, required } from "/modules/form/validation";
+import { required } from "/modules/form/validation";
 import RFTextField from "/modules/form/RFTextField";
 import FormButton from "/modules/form/FormButton";
 import FormFeedback from "/modules/form/FormFeedback";
 import withRoot from "/modules/withRoot";
 import { FORM_ERROR } from "final-form";
 import { useRouter } from "next/router";
+import { useDispatch } from 'react-redux';
+import { setAuthState } from '/modules/model/auth';
 
 function SignIn() {
   const router = useRouter();
   const [sent, setSent] = React.useState(false);
+  const dispatch = useDispatch();
+
 
   const validate = (values) => {
-    const errors = required(["email", "password"], values);
-
-    if (!errors.email) {
-      const emailError = email(values.email);
-      if (emailError) {
-        errors.email = emailError;
-      }
-    }
-
+    const errors = required(["id", "password"], values);
     return errors;
   };
 
   const handleSubmit = async (values) => {
     setSent(true);
-    const res = await fetch("http://localhost:7404/api/Users/Login", {
+    let flag = false;
+    const res = await fetch("https://localhost:7204/api/Users/Login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
+    }).catch((err) => {
+      flag = true;
     });
-    if (res.status === 200) {
-      router.push("/dd");
+    if (flag) {
+      setSent(false);
+      return { [FORM_ERROR]: "Server error" };
+    } else if (res.status === 200) {
+      dispatch(setAuthState("Bearer"));
+      router.push("/");
     } else {
       setSent(false);
       return { [FORM_ERROR]: "Wrong User name or Password" };
@@ -76,14 +79,14 @@ function SignIn() {
               sx={{ mt: 6 }}
             >
               <Field
-                autoComplete="email"
+                autoComplete="user-name"
                 autoFocus
                 component={RFTextField}
                 disabled={submitting || sent}
                 fullWidth
-                label="Email"
+                label="User name"
                 margin="normal"
-                name="email"
+                name="id"
                 required
                 size="large"
               />
