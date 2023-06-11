@@ -66,45 +66,65 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     const handleEventAdd = (addInfo) => {
         const event = {
             id: addInfo.event.id,
-            start: addInfo.event.startStr,
-            end: addInfo.event.endStr,
-        }
-        fetch('http://localhost:7204/api/Missions', {
-            method: 'POST',
+            title: addInfo.event.title,
+            description: addInfo.event.extendedProps.description,
+            type: addInfo.event.extendedProps.type,
+            length: Math.floor(
+                addInfo.event.end - addInfo.event.start / (1000 * 60)
+            ),
+            optionalDays: addInfo.event.extendedProps.optionalDays,
+            optionalHours: addInfo.event.extendedProps.optionalHours,
+            deadLine: addInfo.event.extendedProps.deadLine,
+            priority: addInfo.event.extendedProps.priority,
+            setteled: addInfo.event.extendedProps.setteled,
+            startDate: addInfo.event.startStr,
+            endDate: addInfo.event.endStr,
+        };
+        fetch("http://localhost:7204/api/Missions", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(addInfo.event)
-            }).then((response) => {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(event),
+        })
+            .then((response) => {
                 return response.getBody();
-            }
-        ).then((data) => {
-            console.log(data);
-            addInfo.event.setProp('id', data);
-        });
-    }
+            })
+            .then((data) => {
+                console.log(data);
+                addInfo.event.setProp("id", data);
+            });
+    };
+
     const handleEventChange = (changeInfo) => {
         const event = {
             id: changeInfo.event.id,
-            start: changeInfo.event.startStr,
-            end: changeInfo.event.endStr,
-        }
-        fetch('http://localhost:7204/api/Missions/0', {
-            method: 'PUT',
+            title: changeInfo.event.title,
+            description: changeInfo.event.extendedProps.description,
+            type: changeInfo.event.extendedProps.type,
+            optionalDays: changeInfo.event.extendedProps.optionalDays,
+            optionalHours: changeInfo.event.extendedProps.optionalHours,
+            setteled: changeInfo.event.extendedProps.setteled,
+            startDate: changeInfo.event.extendedProps.startStr,
+            endDate: changeInfo.event.extendedProps.endStr,
+        };
+        fetch("http://localhost:7204/api/Missions/0", {
+            method: "PUT",
             headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(event)
-            })
-    }
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(event),
+        });
+    };
+
     const handleEventRemove = (removeInfo) => {
-        fetch('http://localhost:7204/api/Missions'+ removeInfo.event.id, {
-            method: 'DELETE',
+        fetch("http://localhost:7204/api/Missions" + removeInfo.event.id, {
+            method: "DELETE",
             headers: {
-                'Content-Type': 'text/plain'
+                "Content-Type": "text/plain",
             },
         });
-    }
+    };
 
     const deleteEvent = (appointment) => {
         const event = calendarRef.current.getApi().getEventById(appointment.id);
