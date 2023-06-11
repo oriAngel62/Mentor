@@ -13,6 +13,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { useState } from 'react';
 import { Backdrop, backdropClasses } from '@mui/material';
 import { set } from 'date-fns';
@@ -36,10 +39,47 @@ const Demo = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
 }));
 
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+  
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box sx={{ p: 3 }}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired,
+};
+  
+function a11yProps(index) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
+
 export default function ToolBox({ data, setData }) {
     const [checked, setChecked] = React.useState([0]);
-
     const [open, setOpen] = React.useState(false);
+    const [tab, setTab] = React.useState(0);
+
+    const handleTab = (event, newValue) => {
+        setTab(newValue);
+    };
     const handleOpen = () => {
         setOpen(true);
     };
@@ -108,6 +148,7 @@ export default function ToolBox({ data, setData }) {
                     <Modal
                         open={open}
                         onClose={handleClose}
+                        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         slots={{ backdrop: Backdrop }}
                         slotProps={{
                             backdrop: {
@@ -119,14 +160,12 @@ export default function ToolBox({ data, setData }) {
                         }}
                         aria-labelledby="modal-title"
                     >
-                        <Box sx={{ ...style}}>
-                                <b id="modal-title">Mission Details</b>
+                        
                                 <MissionForm appointmentData={data} interval={interval} day={[dayName, setDayName]} onDeadlineChange={onDeadlineChange}
                                 onSliderChange={onSliderChange} onDescriptionChange={onDescriptionChange} onRankChange={onRankChange}
                                 onSelectChange={onSelectChange} isAssigned={false}
                                 />
-                                <Button onClick={handleClose}>Close Modal</Button>
-                        </Box>
+                        
                     </Modal>
         </ListItem>
         );
@@ -134,16 +173,28 @@ export default function ToolBox({ data, setData }) {
   
     return (
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
-            <Grid item xs={12} md={6}>
-                <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
-                    Unassigned Appointments
-                </Typography>
-                <Demo>
-                    <List>
-                        {listItems}
-                    </List>
-                </Demo>
-            </Grid>
+            <Tabs
+            value={tab}
+            onChange={handleTab}
+            textColor="secondary"
+            indicatorColor="secondary"
+            aria-label="secondary tabs"
+            >
+                <Tab value={0} label="Unsettled" />
+                <Tab value={1} label="Settled" />
+            </Tabs>
+            <TabPanel value={tab} index={0}>
+                <Grid item xs={12} md={6}>
+                    <Demo>
+                        <List>
+                            {listItems}
+                        </List>
+                    </Demo>
+                </Grid>
+            </TabPanel>
+            <TabPanel value={tab} index={1}>
+                Item Two
+            </TabPanel>
         </Box>
     );
   }

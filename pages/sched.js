@@ -1,5 +1,5 @@
 import Demo from "/modules/components/fullCalendarDemo";
-// import { appointments } from '../public/demo_data/month_appointments';
+import { appointments } from '../public/demo_data/month_appointments';
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import withRoot from "/modules/withRoot";
 import { useRouter } from 'next/router';
 import AppAppBar from "/modules/views/AppAppBar";
 import AppFooter from "/modules/views/AppFooter";
+import LoadingScreen from "/modules/views/loading";
 
 
 const getAppointments = async (auth) => {
@@ -24,7 +25,6 @@ const getAppointments = async (auth) => {
   if (!res.ok) {
     return {
         redirect: true,
-        text: "You are not authorized to view this page",
     };
   }
   const repo = await res.json()
@@ -42,7 +42,6 @@ const getAppointments = async (auth) => {
       redirect: false,
       setteledAppoitments: setteledAppoitments,
       unSetteledAppoitments: unSetteledAppoitments,
-      text: "You are authorized to view this page",
   };
 };
 
@@ -51,6 +50,7 @@ const getAppointments = async (auth) => {
 
 function Sched() {
   const auth = useSelector(selectAuthState);
+  const router = useRouter();
   const [promise, setPromise] = useState(
     {
       redirect: true,
@@ -68,14 +68,13 @@ function Sched() {
       }
     });
   }, []);
-  const router = useRouter();
   if (promise.redirect) {
-    return (<div>{promise.text}</div>);
+    return (<LoadingScreen />);
   } else {
     return (
       <React.Fragment>
         <AppAppBar />
-        <Demo setteledAppoitments={promise.setteledAppoitments} unSetteledAppoitments={promise.unSetteledAppoitments}/>
+        <Demo setteledAppoitments={appointments} unSetteledAppoitments={appointments}/>
         <AppFooter />
       </React.Fragment>
     )

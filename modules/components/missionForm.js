@@ -8,85 +8,55 @@ import AppForm from "/modules/views/AppForm";
 import RFTextField from "/modules/form/RFTextField";
 import FormButton from "/modules/form/FormButton";
 import FormFeedback from "/modules/form/FormFeedback";
+import { required } from "/modules/form/validation";
+import { FORM_ERROR } from "final-form";
+import RFDateField from '../form/RFDateField';
+import RatingField from '../form/RatingField';
+import MenuItem from '@mui/material/MenuItem';
+import SelectField from '../form/SelectField';
+import TimeField from '../form/TimeField';
+import ModalForm from '../views/ModalForm';
+
 
 export default function MissionForm({day,onTitleChange,onRankChange=undefined, rank, onDescriptionChange, onDeadlineChange, onSliderChange, onSelectChange, appointmentData, interval, isAssigned=true}){
   console.log("appointmentData:", appointmentData);
   const [dayName, setDayName] = day;
-  
+  const [sent, setSent] = React.useState(false);
 
-  // return (
-  //     <>
-  //         <AppointmentForm.TextEditor
-  //         value={appointmentData.title}
-  //         onValueChange={onTitleChange}
-  //         placeholder="Title"
-  //         />
-  //         <AppointmentForm.TextEditor
-  //         value={appointmentData.description}
-  //         onValueChange={onDescriptionChange}
-  //         placeholder="Description"
-  //         type='multilineTextEditor'
-  //         />
-  //         {isAssigned ?
-  //         <>
-  //         <AppointmentForm.Label
-  //           text="Rank:"
-  //           type="regular"
-  //           />
-  //         <Slider
-  //             marks
-  //             onChange={onRankChange}
-  //             valueLabelDisplay="auto"
-  //             step={0.1}
-  //             min={1}
-  //             max={10}
-  //             value={rank}
-  //         />
-  //         </> :
-  //         <>
-  //         <AppointmentForm.Label
-  //         text="Deadline:"
-  //         type="regular"
-  //         />
-  //         <AppointmentForm.DateEditor
-  //         value={appointmentData.deadline}
-  //         onValueChange={onDeadlineChange}
-  //         readOnly={isAssigned}
-  //         />
-  //         <CheckSelect useNset={[dayName, setDayName]}/>
-  //         <Box sx={{ width: 400 }}>
-  //           <AppointmentForm.Label
-  //           text="Optional hours:"
-  //           type="regular"
-  //           />
-  //           <Slider
-  //               marks
-  //               value={interval}
-  //               onChange={onSliderChange}
-  //               valueLabelDisplay="auto"
-  //               step={0.25}
-  //               min={9.00}
-  //               max={20.00}
-  //           />
-  //         </Box>
-  //         <AppointmentForm.Label
-  //         text="Priority:"
-  //         type="regular"
-  //         />
-  //         <AppointmentForm.Select
-  //         sx={{ width: 400 }}
-  //         onValueChange={onSelectChange}
-  //         value={appointmentData.priority ? appointmentData.priority : 0}
-  //         availableOptions={[{id: 0, text: "Low"}, {id: 1, text: "Medium"}, {id: 2, text: "High"}]}
-  //         />
-  //         </>}
-          
-  //     </>
-  // );
+  const validate = (values) => {
+    const errors = required(["title", "deadline", "startHour", "endHour", "priority"], values);
+    return errors;
+  };
+
+  const handleSubmit = async (values) => {
+    setSent(true);
+    // let flag = false;
+    // const res = await fetch("https://localhost:7204/api/Users/Login", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(values),
+    // }).catch((err) => {
+    //   flag = true;
+    // });
+    // if (flag) {
+    //   setSent(false);
+    //   return { [FORM_ERROR]: "Server error" };
+    // } else if (res.status === 200) {
+    //   const tokenJson = await res.json();
+    //   dispatch(setAuthState("Bearer " + tokenJson.token));
+    //   router.push("/");
+    // } else {
+    //   setSent(false);
+    //   return { [FORM_ERROR]: "Wrong User name or Password" };
+    // }
+  };
+  
 
   return (
     <React.Fragment>
-        <AppForm>
+        <ModalForm>
           <React.Fragment>
             <Typography variant="h3" gutterBottom marked="center" align="center">
               Appointment Form
@@ -105,7 +75,18 @@ export default function MissionForm({day,onTitleChange,onRankChange=undefined, r
                 sx={{ mt: 6 }}
               >
                 <Field
-                  autoComplete="user-name"
+                  autoComplete="Title"
+                  autoFocus
+                  component={RFTextField}
+                  disabled={submitting || sent}
+                  fullWidth
+                  label="Title"
+                  margin="normal"
+                  name="title"
+                  size="large"
+                />
+                <Field
+                  autoComplete="Description"
                   autoFocus
                   multiline
                   component={RFTextField}
@@ -113,58 +94,81 @@ export default function MissionForm({day,onTitleChange,onRankChange=undefined, r
                   fullWidth
                   label="Description"
                   margin="normal"
-                  name="id"
-                  required
+                  name="description"
                   size="large"
                 />
+                <Typography variant="body1">
+                  {"Rank "}
+                </Typography>
                 <Field
                   fullWidth
                   size="large"
-                  component={RFTextField}
+                  component={RatingField}
+                  max={10}
+                  precision={0.1}
                   disabled={submitting || sent}
-                  required
-                  name="password"
+                  name="rank"
                   autoComplete="current-password"
                   label="Rank"
-                  type="password"
                   margin="normal"
                 />
+                <br />
+                <br />
                 <Field
                   fullWidth
                   size="large"
-                  component={RFTextField}
+                  component={RFDateField}
                   disabled={submitting || sent}
                   required
-                  name="password"
-                  autoComplete="current-password"
+                  name="deadline"
+                  autoComplete="Deadline"
                   label="Deadline"
-                  type="password"
                   margin="normal"
                 />
+                <br />
+                <br />
+                <Typography variant="body1">
+                  {"Optional hours"}
+                </Typography>
                 <Field
                   fullWidth
                   size="large"
-                  component={RFTextField}
+                  component={TimeField}
                   disabled={submitting || sent}
                   required
-                  name="password"
-                  autoComplete="current-password"
-                  label="Optional hours"
-                  type="password"
+                  name="startHour"
+                  autoComplete="Start hour"
+                  label="Start hour"
                   margin="normal"
                 />
+                <b> _ </b>
                 <Field
                   fullWidth
                   size="large"
-                  component={RFTextField}
+                  component={TimeField}
                   disabled={submitting || sent}
                   required
-                  name="password"
-                  autoComplete="current-password"
+                  name="endHour"
+                  autoComplete="End hour"
+                  label="End hour"
+                  margin="normal"
+                />
+                <br />
+                <br />
+                <Field
+                  size="large"
+                  component={SelectField}
+                  disabled={submitting || sent}
+                  required
+                  name="priority"
+                  autoComplete="Priority"
                   label="Priority"
-                  type="password"
                   margin="normal"
-                />
+                >
+                  <MenuItem value={0}>Low</MenuItem>
+                  <MenuItem value={1}>Medium</MenuItem>
+                  <MenuItem value={2}>High</MenuItem>
+                </Field>
                 <FormSpy subscription={{ submitError: true }}>
                   {({ submitError }) =>
                     submitError ? (
@@ -186,7 +190,7 @@ export default function MissionForm({day,onTitleChange,onRankChange=undefined, r
               </Box>
             )}
           </Form>
-        </AppForm>
+        </ModalForm>
       </React.Fragment>
   );
 };

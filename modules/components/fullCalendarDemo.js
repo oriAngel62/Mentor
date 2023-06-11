@@ -9,6 +9,15 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
 import ToolBox from './toolBox';
 
 export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
+    const appointments = setteledAppoitments.map((appointment) => {
+        return {
+            id: createEventId(),
+            ...appointment
+        }
+    });
+    appointments.push(...INITIAL_EVENTS);
+    console.log(appointments);
+
     const [currentEvents, setCurrentEvents] = React.useState([]);
     const [drawer, setDrawer] = React.useState(false);
 
@@ -76,14 +85,14 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             onClose={toggleDrawer(false)}
             onOpen={toggleDrawer(true)}
         >
-            <ToolBox data={[]} setData={()=>{null}} />
+            <ToolBox data={appointments} setData={()=>{null}} />
         </SwipeableDrawer>
         <div className='demo-app-main'>
           <FullCalendar
             customButtons={
                 {
                     custom1: {
-                        text: 'custom 1',
+                        text: 'Tool Box',
                         click: toggleDrawer(true),
                     },
                 }
@@ -102,7 +111,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
-            initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+            initialEvents={appointments} // alternatively, use the `events` setting to fetch from a feed
             select={handleDateSelect}
             eventContent={renderEventContent} // custom render function
             eventClick={handleEventClick}
