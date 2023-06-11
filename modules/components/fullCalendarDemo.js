@@ -25,6 +25,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     const [selectedEvent, setSelectedEvent] = React.useState({});
     const [drawer, setDrawer] = React.useState(false);
     const [open, setOpen] = React.useState('');
+    const calendarRef = React.useRef(null);
 
     const handleClose = (event, reason) => {
         console.log(reason);
@@ -105,13 +106,31 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
         });
     }
 
+    const deleteEvent = (appointment) => {
+        const event = calendarRef.current.getApi().getEventById(appointment.id);
+        event.remove();
+    }
+
+    const updateEvent = (appointment) => {
+        const event = calendarRef.current.getApi().getEventById(appointment.id);
+        if (appointment.start != event.startStr) {
+            event.setStart(appointment.start);
+        } else if (appointment.end != event.endStr) {
+            event.setEnd(appointment.end);
+        } else if (appointment.title != event.title) {
+            event.setProp('title', appointment.title);
+        }
+        Object.entries(data).forEach(([key, value]) => {
+            if(key == 'start' || key == 'end' || key == 'id' || key == 'title') {
+                return;
+            }
+            if (value != event.extendedProps[key]) {
+                event.setExtendedProp(key, value);
+            }
+        });
+    }
+
     const renderEventContent = (eventInfo) => {
-        // return (
-        //   <>
-        //     <b>{eventInfo.timeText}</b>
-        //     <i>{eventInfo.event.title}</i>
-        //   </>
-        // )
         return (
             <Typography variant="body2" align="center">
             {eventInfo.timeText} {eventInfo.event.title}
@@ -130,7 +149,9 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
                 // }}
                 aria-labelledby="modal-title"
                 >
-                    <MissionForm appointment={eventInfo.event} isSettled={true} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
+                    <MissionForm
+                    appointment={eventInfo.event} isSettled={true} updateAppointment={updateEvent}
+                    deleteAppointment={deleteEvent} addAppointment={calendarRef.current.getApi().addEvent} />
                 </Modal>
           </Typography>
         );
@@ -181,10 +202,12 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             // }}
             aria-labelledby="modal-title"
             >
-                <MissionForm appointment={selectedEvent} isSettled={selectedEvent.settled} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
+                <MissionForm appointment={selectedEvent} isSettled={selectedEvent.settled} updateAppointment={updateEvent}
+                    deleteAppointment={deleteEvent} addAppointment={calendarRef.current.getApi().addEvent} />
         </Modal>
         <div className='demo-app-main'>
           <FullCalendar
+            ref={calendarRef}
             customButtons={
                 {
                     custom1: {
@@ -212,11 +235,10 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             eventContent={renderEventContent} // custom render function
             eventClick={(clickInfo)=>{handleEventClick(clickInfo.event.id)}}
             eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
-            eventAdd={function(){}}
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
+            // you can update a remote database when these fire:
+            eventAdd={handleEventAdd}
+            eventChange={handleEventChange}
+            eventRemove={handleEventRemove} 
           />
         </div>
       </div>

@@ -17,6 +17,9 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useState } from "react";
+import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
+import DeveloperBoardSharpIcon from '@mui/icons-material/DeveloperBoardSharp';
+import { green } from '@mui/material/colors';
 import { Backdrop, backdropClasses } from "@mui/material";
 import { set } from "date-fns";
 import MissionForm from "./missionForm";
@@ -101,21 +104,6 @@ export default function ToolBox({ data, setData }) {
         setChecked(newChecked);
     };
 
-    const [interval, setInterval] = useState([20, 37]);
-    const [dayName, setDayName] = useState([]);
-
-    const onDescriptionChange = (nextValue) => {
-        appointmentData.description = nextValue;
-    };
-    const onDeadlineChange = (nextValue) => {};
-    const onSelectChange = (nextValue) => {};
-
-    const onSliderChange = (event, newValue) => {
-        setInterval(newValue);
-    };
-
-    const onRankChange = (nextValue) => {};
-
     const listItems = data.map((appointment, index) => {
         const labelId = `checkbox-list-label-${appointment.id}`;
         return (
@@ -178,27 +166,35 @@ export default function ToolBox({ data, setData }) {
     });
 
     return (
-        <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
-            <Tabs
-                value={tab}
-                onChange={handleTab}
-                textColor="secondary"
-                indicatorColor="secondary"
-                aria-label="secondary tabs"
-            >
-                <Tab value={0} label="Unsettled" />
-                <Tab value={1} label="Settled" />
-            </Tabs>
-            <TabPanel value={tab} index={0}>
-                <Grid item xs={12} md={6}>
-                    <Demo>
-                        <List>{listItems}</List>
-                    </Demo>
-                </Grid>
-            </TabPanel>
-            <TabPanel value={tab} index={1}>
-                Item Two
-            </TabPanel>
-        </Box>
+        <React.Fragment>
+            <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
+                <IconButton edge="end" aria-label="algorithm" alignItems="left">
+                            <DeveloperBoardSharpIcon fontSize="large" sx={{ color: green[500] }}/>
+                </IconButton>
+                <IconButton edge="end" aria-label="add" color="secondary" >
+                            <AddCircleSharpIcon fontSize="large"/>
+                </IconButton>
+                <Tabs
+                    value={tab}
+                    onChange={handleTab}
+                    textColor="secondary"
+                    indicatorColor="secondary"
+                    aria-label="secondary tabs"
+                >
+                    <Tab value={0} label="Unsettled" />
+                    <Tab value={1} label="Settled" />
+                </Tabs>
+                <TabPanel value={tab} index={0}>
+                    <Grid item xs={12} md={6}>
+                        <Demo>
+                            <List>{listItems}</List>
+                        </Demo>
+                    </Grid>
+                </TabPanel>
+                <TabPanel value={tab} index={1}>
+                    Item Two
+                </TabPanel>
+            </Box>
+        </React.Fragment>
     );
 }
