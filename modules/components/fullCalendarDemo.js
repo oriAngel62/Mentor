@@ -26,7 +26,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     const [drawer, setDrawer] = React.useState(false);
     const [open, setOpen] = React.useState('');
 
-    const handleClose = (event, reason, id) => {
+    const handleClose = (event, reason) => {
         console.log(reason);
         setOpen('');
     };
@@ -39,7 +39,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
         setSelectedEvent(event);
         handleEventClick(event.id);
 
-        // console.log(selectInfo)
+        console.log(selectInfo)
         // if (title) {
         //   calendarApi.addEvent({
         //     id: createEventId(),
@@ -73,8 +73,8 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             <Typography variant="body2" align="center">
             {eventInfo.timeText} {eventInfo.event.title}
                 <Modal
-                open={open == eventInfo.event.id}
-                onClose={(event, reason)=>{handleClose(event, reason, 0)}}
+                open={open ? open == eventInfo.event.id : false}
+                onClose={handleClose}
                 sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 // slots={{ backdrop: Backdrop }}
                 // slotProps={{
@@ -87,7 +87,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
                 // }}
                 aria-labelledby="modal-title"
                 >
-                    <MissionForm appointment={eventInfo} isSettled={eventInfo.settled} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
+                    <MissionForm appointment={eventInfo.event} isSettled={true} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
                 </Modal>
           </Typography>
         );
@@ -125,7 +125,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
         </SwipeableDrawer>
         <Modal
             open={open == selectedEvent.id}
-            onClose={(event, reason)=>{handleClose(event, reason, 1)}}
+            onClose={handleClose}
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             // slots={{ backdrop: Backdrop }}
             // slotProps={{

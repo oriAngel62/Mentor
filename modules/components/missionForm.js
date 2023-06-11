@@ -20,7 +20,7 @@ import ModalForm from '../views/ModalForm';
 
 export default function MissionForm({appointment, isSettled, updateAppointment, deleteAppointment}){
   // deleteAppointment(appointment);
-  // console.log("appointmentData:", appointmentData);
+  console.log("appointmentData:", appointment);
   const [sent, setSent] = React.useState(false);
 
   const validate = (values) => {
