@@ -62,6 +62,31 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
         setCurrentEvents(events);
     }
 
+    const handleEventAdd = (addInfo) => {
+        const event = {
+            id: addInfo.event.id,
+            start: addInfo.event.startStr,
+            end: addInfo.event.endStr,
+        }
+        fetch('http://localhost:7204/api/Missions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(addInfo.event)
+            }).then((response) => {
+                return response.json();
+            }
+        ).then((data) => {
+            console.log(data);
+            addInfo.event.id = data.id;
+        });
+    }
+    const handleEventChange = (changeInfo) => {
+    }
+    const handleEventRemove = (removeInfo) => {
+    }
+
     const renderEventContent = (eventInfo) => {
         // return (
         //   <>
