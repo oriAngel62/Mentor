@@ -75,7 +75,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
                 },
                 body: JSON.stringify(addInfo.event)
             }).then((response) => {
-                return response.json();
+                return response.getBody();
             }
         ).then((data) => {
             console.log(data);
