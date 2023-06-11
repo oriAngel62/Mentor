@@ -79,12 +79,30 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             }
         ).then((data) => {
             console.log(data);
-            addInfo.event.id = data.id;
+            addInfo.event.setProp('id', data);
         });
     }
     const handleEventChange = (changeInfo) => {
+        const event = {
+            id: changeInfo.event.id,
+            start: changeInfo.event.startStr,
+            end: changeInfo.event.endStr,
+        }
+        fetch('http://localhost:7204/api/Missions/0', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(event)
+            })
     }
     const handleEventRemove = (removeInfo) => {
+        fetch('http://localhost:7204/api/Missions'+ removeInfo.event.id, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+        });
     }
 
     const renderEventContent = (eventInfo) => {

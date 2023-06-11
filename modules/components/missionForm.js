@@ -98,6 +98,8 @@ export default function MissionForm({appointment, isSettled, updateAppointment, 
                   name="description"
                   size="large"
                 />
+                {isSettled &&
+                <>
                 <Typography variant="body1">
                   {"Rank "}
                 </Typography>
@@ -115,6 +117,7 @@ export default function MissionForm({appointment, isSettled, updateAppointment, 
                 />
                 <br />
                 <br />
+                </>}
                 <Field
                   fullWidth
                   size="large"
@@ -128,6 +131,8 @@ export default function MissionForm({appointment, isSettled, updateAppointment, 
                 />
                 <br />
                 <br />
+                {!isSettled &&
+                <>
                 <Typography variant="body1">
                   {"Optional hours"}
                 </Typography>
@@ -156,6 +161,7 @@ export default function MissionForm({appointment, isSettled, updateAppointment, 
                 />
                 <br />
                 <br />
+                </>}
                 <Field
                   size="large"
                   component={SelectField}
@@ -165,6 +171,7 @@ export default function MissionForm({appointment, isSettled, updateAppointment, 
                   autoComplete="Priority"
                   label="Priority"
                   margin="normal"
+                  readOnly={isSettled}
                 >
                   <MenuItem value={0}>Low</MenuItem>
                   <MenuItem value={1}>Medium</MenuItem>
