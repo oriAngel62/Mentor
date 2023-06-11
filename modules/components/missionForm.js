@@ -18,8 +18,9 @@ import TimeField from '../form/TimeField';
 import ModalForm from '../views/ModalForm';
 
 
-export default function MissionForm({day,onTitleChange,onRankChange=undefined, rank, onDescriptionChange, onDeadlineChange, onSliderChange, onSelectChange, appointmentData, interval, isAssigned=true}){
-  console.log("appointmentData:", appointmentData);
+export default function MissionForm({appointment, isSettled, updateAppointment, deleteAppointment}){
+  // deleteAppointment(appointment);
+  // console.log("appointmentData:", appointmentData);
   const [dayName, setDayName] = day;
   const [sent, setSent] = React.useState(false);
 
@@ -30,6 +31,7 @@ export default function MissionForm({day,onTitleChange,onRankChange=undefined, r
 
   const handleSubmit = async (values) => {
     setSent(true);
+    console.log("values:", values.deadline['$d']);
     // let flag = false;
     // const res = await fetch("https://localhost:7204/api/Users/Login", {
     //   method: "POST",

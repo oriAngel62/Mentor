@@ -16,7 +16,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
         }
     });
     appointments.push(...INITIAL_EVENTS);
-    console.log(appointments);
+    // console.log(appointments);
 
     const [currentEvents, setCurrentEvents] = React.useState([]);
     const [drawer, setDrawer] = React.useState(false);
@@ -97,7 +97,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
                     },
                 }
             }
-            slotMinTime={'08:00:00'}
+            slotMinTime={'09:00:00'}
             slotMaxTime={'22:00:00'}
             height={'auto'}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

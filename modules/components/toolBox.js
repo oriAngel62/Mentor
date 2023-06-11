@@ -83,7 +83,8 @@ export default function ToolBox({ data, setData }) {
     const handleOpen = () => {
         setOpen(true);
     };
-    const handleClose = () => {
+    const handleClose = (event, reason) => {
+        console.log(reason);
         setOpen(false);
     };
 
@@ -149,15 +150,15 @@ export default function ToolBox({ data, setData }) {
                         open={open}
                         onClose={handleClose}
                         sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        slots={{ backdrop: Backdrop }}
-                        slotProps={{
-                            backdrop: {
-                            sx: {
-                                borderColor: 'rgba(255, 255, 255, 0)',
-                                backgroundColor: 'rgba(0, 0, 0, 0.05)',
-                            },
-                            },
-                        }}
+                        // slots={{ backdrop: Backdrop }}
+                        // slotProps={{
+                        //     backdrop: {
+                        //     sx: {
+                        //         borderColor: 'rgba(255, 255, 255, 0)',
+                        //         backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                        //     },
+                        //     },
+                        // }}
                         aria-labelledby="modal-title"
                     >
                         

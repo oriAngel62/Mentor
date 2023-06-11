@@ -74,7 +74,7 @@ function Sched() {
     return (
       <React.Fragment>
         <AppAppBar />
-        <Demo setteledAppoitments={appointments} unSetteledAppoitments={appointments}/>
+          <Demo setteledAppoitments={appointments} unSetteledAppoitments={appointments}/>
         <AppFooter />
       </React.Fragment>
     )
