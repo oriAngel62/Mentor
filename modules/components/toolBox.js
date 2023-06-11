@@ -162,10 +162,7 @@ export default function ToolBox({ data, setData }) {
                         aria-labelledby="modal-title"
                     >
                         
-                                <MissionForm appointmentData={data} interval={interval} day={[dayName, setDayName]} onDeadlineChange={onDeadlineChange}
-                                onSliderChange={onSliderChange} onDescriptionChange={onDescriptionChange} onRankChange={onRankChange}
-                                onSelectChange={onSelectChange} isAssigned={false}
-                                />
+                        <MissionForm appointment={appointment} isSettled={appointment.settled} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
                         
                     </Modal>
         </ListItem>

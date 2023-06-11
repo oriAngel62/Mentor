@@ -5,6 +5,9 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Typography from '../components/Typography';
+import Modal from '@mui/material/Modal';
+import MissionForm from './missionForm';
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import ToolBox from './toolBox';
 
@@ -19,29 +22,40 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     // console.log(appointments);
 
     const [currentEvents, setCurrentEvents] = React.useState([]);
+    const [selectedEvent, setSelectedEvent] = React.useState({});
     const [drawer, setDrawer] = React.useState(false);
+    const [open, setOpen] = React.useState('');
+
+    const handleClose = (event, reason, id) => {
+        console.log(reason);
+        setOpen('');
+    };
 
     const handleDateSelect = (selectInfo) => {
-        let title = prompt('Please enter a new title for your event')
+        // let title = prompt('Please enter a new title for your event')
         let calendarApi = selectInfo.view.calendar
-    
         calendarApi.unselect() // clear date selection
-        console.log(selectInfo)
-        if (title) {
-          calendarApi.addEvent({
-            id: createEventId(),
-            title,
-            start: selectInfo.startStr,
-            end: selectInfo.endStr,
-            allDay: selectInfo.allDay
-          })
-        }
+        const event = {id: createEventId() ,start: selectInfo.startStr, end: selectInfo.endStr, allDay: selectInfo.allDay, settled: true};
+        setSelectedEvent(event);
+        handleEventClick(event.id);
+
+        // console.log(selectInfo)
+        // if (title) {
+        //   calendarApi.addEvent({
+        //     id: createEventId(),
+        //     title,
+        //     start: selectInfo.startStr,
+        //     end: selectInfo.endStr,
+        //     allDay: selectInfo.allDay
+        //   })
+        // }
     }
 
-    const handleEventClick = (clickInfo) => {
-        if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-          clickInfo.event.remove()
-        }
+    const handleEventClick = (id) => {
+        // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+        //   clickInfo.event.remove()
+        // }
+        setOpen(id);
     }
     
     const handleEvents = (events) => {
@@ -49,12 +63,34 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     }
 
     const renderEventContent = (eventInfo) => {
+        // return (
+        //   <>
+        //     <b>{eventInfo.timeText}</b>
+        //     <i>{eventInfo.event.title}</i>
+        //   </>
+        // )
         return (
-          <>
-            <b>{eventInfo.timeText}</b>
-            <i>{eventInfo.event.title}</i>
-          </>
-        )
+            <Typography variant="body2" align="center">
+            {eventInfo.timeText} {eventInfo.event.title}
+                <Modal
+                open={open == eventInfo.event.id}
+                onClose={(event, reason)=>{handleClose(event, reason, 0)}}
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                // slots={{ backdrop: Backdrop }}
+                // slotProps={{
+                //     backdrop: {
+                //     sx: {
+                //         borderColor: 'rgba(255, 255, 255, 0)',
+                //         backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                //     },
+                //     },
+                // }}
+                aria-labelledby="modal-title"
+                >
+                    <MissionForm appointment={eventInfo} isSettled={eventInfo.settled} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
+                </Modal>
+          </Typography>
+        );
     }
       
     const renderSidebarEvent = (event) => {
@@ -87,6 +123,23 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
         >
             <ToolBox data={appointments} setData={()=>{null}} />
         </SwipeableDrawer>
+        <Modal
+            open={open == selectedEvent.id}
+            onClose={(event, reason)=>{handleClose(event, reason, 1)}}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            // slots={{ backdrop: Backdrop }}
+            // slotProps={{
+            //     backdrop: {
+            //     sx: {
+            //         borderColor: 'rgba(255, 255, 255, 0)',
+            //         backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            //     },
+            //     },
+            // }}
+            aria-labelledby="modal-title"
+            >
+                <MissionForm appointment={selectedEvent} isSettled={selectedEvent.settled} updateAppointment={()=>{}} deleteAppointment={()=>{}} />
+        </Modal>
         <div className='demo-app-main'>
           <FullCalendar
             customButtons={
@@ -114,7 +167,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             initialEvents={appointments} // alternatively, use the `events` setting to fetch from a feed
             select={handleDateSelect}
             eventContent={renderEventContent} // custom render function
-            eventClick={handleEventClick}
+            eventClick={(clickInfo)=>{handleEventClick(clickInfo.event.id)}}
             eventsSet={handleEvents} // called after events are initialized/added/changed/removed
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
