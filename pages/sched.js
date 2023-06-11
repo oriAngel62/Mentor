@@ -1,10 +1,13 @@
-import Demo from "/modules/components/demo"
+import Demo from "/modules/components/fullCalendarDemo";
 // import { appointments } from '../public/demo_data/month_appointments';
-// import * as React from "react";
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { useSelector } from 'react-redux';
 import { selectAuthState } from "/modules/model/auth";
+import withRoot from "/modules/withRoot";
 import { useRouter } from 'next/router';
+import AppAppBar from "/modules/views/AppAppBar";
+import AppFooter from "/modules/views/AppFooter";
 
 
 const getAppointments = async (auth) => {
@@ -46,7 +49,7 @@ const getAppointments = async (auth) => {
 
 
 
-export default function Sched() {
+function Sched() {
   const auth = useSelector(selectAuthState);
   const [promise, setPromise] = useState(
     {
@@ -70,20 +73,13 @@ export default function Sched() {
     return (<div>{promise.text}</div>);
   } else {
     return (
-      <Demo setteledAppoitments={promise.setteledAppoitments} unSetteledAppoitments={promise.unSetteledAppoitments}/>
+      <React.Fragment>
+        <AppAppBar />
+        <Demo setteledAppoitments={promise.setteledAppoitments} unSetteledAppoitments={promise.unSetteledAppoitments}/>
+        <AppFooter />
+      </React.Fragment>
     )
   }    
-    // return (
-    //   <React.Fragment key={"left"}>
-    //       <Button onClick={toggleDrawer(true)}>{"left"}</Button>
-    //       <SwipeableDrawer
-    //         anchor={"left"}
-    //         open={state}
-    //         onClose={toggleDrawer(false)}
-    //         onOpen={toggleDrawer(true)}
-    //       >
-    //         <ToolBox data={data} setData={setData} />
-    //       </SwipeableDrawer>
-    //   </React.Fragment>
-    // );
 }
+
+export default withRoot(Sched);
