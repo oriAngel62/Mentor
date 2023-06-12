@@ -10,7 +10,6 @@ import Modal from '@mui/material/Modal';
 import MissionForm from './missionForm';
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import ToolBox from './toolBox';
-import { add, set } from 'date-fns'
 
 export default function Demo ({ settledAppointments, unSettledAppointments, setSettledAppointments, setUnSettledAppointments, token}) {
     console.log("SETTLED", settledAppointments);
@@ -76,7 +75,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             id: 0,
             title: addInfo.event.title,
             description: addInfo.event.extendedProps.description,
-            type: "",
+            type: addInfo.event.extendedProps.type,
             length: 5,
             optionalDays: addInfo.event.extendedProps.optionalDays,
             optionalHours: addInfo.event.extendedProps.optionalHours,
@@ -106,9 +105,11 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             if (!addInfo.event.extendedProps.settled) {
                 console.log("UN AFTER ADD FETCH" ,unSettledAppointments);
                 unSettledAppointments[unSettledAppointments.length - 1].id = data;
+                setUnSettledAppointments(unSettledAppointments);
             } else {
                 addInfo.event.setProp("id", data);
                 settledAppointments[settledAppointments.length - 1].id = data;
+                setSettledAppointments(settledAppointments);
             }  
         });
     };
@@ -136,6 +137,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
     };
 
     const handleEventRemove = (removeInfo) => {
+        console.log("ENTERED HANDLE EVENT REMOVE");
         fetch("https://localhost:7204/api/Missions/" + removeInfo.event.id, {
             method: "DELETE",
             headers: {
@@ -147,13 +149,16 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
 
     const deleteEvent = (appointment) => {
         console.log("Calling deleteEvent", calAPI.getEvents())
-        if (appointment.settled) {
+        console.log("Appointment", appointment);
+        if (appointment.settled || (appointment.extendedProps && appointment.extendedProps.settled)) {
             const event = calAPI.getEventById(appointment.id);
             event.remove();
-            setSettledAppointments(settledAppointments.toSpliced(settledAppointments.indexOf(appointment), 1));
+            const index = settledAppointments.findIndex((app) => app.id === appointment.id);
+            setSettledAppointments(settledAppointments.toSpliced(index, 1));
         } else {
             handleEventRemove({event: {id: appointment.id}});
-            setUnSettledAppointments(unSettledAppointments.toSpliced(unSettledAppointments.indexOf(appointment), 1));
+            const index = unSettledAppointments.findIndex((app) => app.id === appointment.id);
+            setUnSettledAppointments(unSettledAppointments.toSpliced(index, 1));
         }
     }
 
@@ -167,7 +172,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             setUnSettledAppointments(apps);
             handleEventAdd({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
                 optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
-                startStr: appointment.start, endStr: appointment.end}}});
+                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadLine, priority: appointment.priority,}}});
         } else {
             apps = settledAppointments.slice();
             apps.push(appointment);
@@ -185,7 +190,8 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
                     optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours,
                     settled: appointment.settled, startStr: appointment.start, endStr: appointment.end}}});
             const apps = unSettledAppointments.slice();
-            apps[unSettledAppointments.indexOf(appointment)] = appointment;
+            const index = apps.findIndex((app) => app.id === appointment.id);
+            apps[index] = appointment;
             setUnSettledAppointments(apps);
         } else {
             const event = calAPI.getEventById(appointment.id);
@@ -205,7 +211,8 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
                 }
             });
             const apps = settledAppointments.slice();
-            apps[settledAppointments.indexOf(appointment)] = appointment;
+            const index = apps.findIndex((app) => app.id === appointment.id);
+            apps[index] = appointment;
             setSettledAppointments(apps);
         }
     }
@@ -298,7 +305,8 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
                 }
             }
             slotMinTime={'09:00:00'}
-            slotMaxTime={'22:00:00'}
+            slotMaxTime={'19:00:00'}
+            slotDuration={'00:15:00'}
             allDaySlot={false}
             height={'auto'}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
