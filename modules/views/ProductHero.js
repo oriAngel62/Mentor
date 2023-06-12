@@ -35,7 +35,7 @@ export default function ProductHero() {
                 variant="h5"
                 sx={{ mb: 4, mt: { xs: 4, sm: 10 } }}
             >
-                One click from being one of mentor:
+                One click from being one of MENTOR:
             </Typography>
             <Button
                 color="secondary"
