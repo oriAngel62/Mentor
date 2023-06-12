@@ -10,8 +10,9 @@ import Modal from '@mui/material/Modal';
 import MissionForm from './missionForm';
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import ToolBox from './toolBox';
+import { add, set } from 'date-fns'
 
-export default function Demo ({ settledAppointments, unSettledAppointments, token}) {
+export default function Demo ({ settledAppointments, unSettledAppointments, setSettledAppointments, setUnSettledAppointments, token}) {
     console.log("SETTLED", settledAppointments);
     console.log("UNSETTLED", unSettledAppointments);
 
@@ -26,6 +27,9 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
         setCalAPI(calendarRef.current.getApi());
         // Use the calendarApi to interact with the FullCalendar API
         // For example, you can call calendarApi.next() to navigate to the next view
+        // let cal = calendarRef.current.getApi();
+        // cal.addEventSource({events: settledAppointments});
+        // cal.refetchEvents();
       }, [calendarRef]);
 
     const handleClose = (event, reason) => {
@@ -61,11 +65,13 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
     }
     
     const handleEvents = (events) => {
+        console.log("SET EVENTS", events);
         setCurrentEvents(events);
     }
 
     const handleEventAdd = (addInfo) => {
         console.log("ENTERED EVENT ADD");
+        console.log("ADD INFO", addInfo);   
         const event = {
             id: 0,
             title: addInfo.event.title,
@@ -74,36 +80,13 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
             length: 5,
             optionalDays: addInfo.event.extendedProps.optionalDays,
             optionalHours: addInfo.event.extendedProps.optionalHours,
-            deadLine: addInfo.event.extendedProps.deadLine,
+            deadLine: addInfo.event.extendedProps.deadline,
             priority: 2,
-            setteled: true,
+            settled: addInfo.event.extendedProps.settled,
             startDate: addInfo.event.startStr,
             endDate: addInfo.event.endStr,
+            rank: addInfo.event.extendedProps.rank,
         };
-        // const event = {
-        //     id: 0,
-        //     title: "string",
-        //     description: "string",
-        //     type: "string",
-        //     length: 0,
-        //     optionalDays: [
-        //       {
-        //         id: 0,
-        //         day: "string"
-        //       }
-        //     ],
-        //     optionalHours: [
-        //       {
-        //         id: 0,
-        //         hour: "string"
-        //       }
-        //     ],
-        //     deadLine: "2023-06-12T00:20:48.323Z",
-        //     priority: 0,
-        //     setteled: true,
-        //     startDate: "2023-06-12T00:20:48.323Z",
-        //     endDate: "2023-06-12T00:20:48.323Z"
-        //   }
         console.log("SENDING:", event);
         fetch("https://localhost:7204/api/Missions", {
             method: "POST",
@@ -119,8 +102,14 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
             console.log("FETCH RESPONSE", response);
             return response.json();
         }).then((data) => {
-            console.log(data);
-            addInfo.event.setProp("id", data);
+            console.log(addInfo);
+            if (!addInfo.event.extendedProps.settled) {
+                console.log("UN AFTER ADD FETCH" ,unSettledAppointments);
+                unSettledAppointments[unSettledAppointments.length - 1].id = data;
+            } else {
+                addInfo.event.setProp("id", data);
+                settledAppointments[settledAppointments.length - 1].id = data;
+            }  
         });
     };
 
@@ -132,9 +121,9 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
             type: changeInfo.event.extendedProps.type,
             optionalDays: changeInfo.event.extendedProps.optionalDays,
             optionalHours: changeInfo.event.extendedProps.optionalHours,
-            setteled: changeInfo.event.extendedProps.setteled,
-            startDate: changeInfo.event.extendedProps.startStr,
-            endDate: changeInfo.event.extendedProps.endStr,
+            settled: changeInfo.event.extendedProps.settled,
+            startDate: changeInfo.event.startStr,
+            endDate: changeInfo.event.endStr,
         };
         fetch("https://localhost:7204/api/Missions/0", {
             method: "PUT",
@@ -158,37 +147,67 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
 
     const deleteEvent = (appointment) => {
         console.log("Calling deleteEvent", calAPI.getEvents())
-        if (appointment.setteled) {
+        if (appointment.settled) {
             const event = calAPI.getEventById(appointment.id);
             event.remove();
+            setSettledAppointments(settledAppointments.toSpliced(settledAppointments.indexOf(appointment), 1));
         } else {
             handleEventRemove({event: {id: appointment.id}});
+            setUnSettledAppointments(unSettledAppointments.toSpliced(unSettledAppointments.indexOf(appointment), 1));
         }
     }
 
     const addEvent = (appointment) => {
         console.log("Calling calAPI.addEvent")
-        calAPI.addEvent(appointment);
+        let apps;
+        if (!appointment.settled) {
+            apps = unSettledAppointments.slice();
+            apps.push(appointment);
+            unSettledAppointments = apps;
+            setUnSettledAppointments(apps);
+            handleEventAdd({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
+                optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
+                startStr: appointment.start, endStr: appointment.end}}});
+        } else {
+            apps = settledAppointments.slice();
+            apps.push(appointment);
+            settledAppointments = apps;
+            setSettledAppointments(apps);
+            calAPI.addEvent(appointment);
+        }
         console.log("Called calAPI.addEvent")
     }
 
     const updateEvent = (appointment) => {
-        const event = calAPI.getEventById(appointment.id);
-        if (appointment.start != event.startStr) {
-            event.setStart(appointment.start);
-        } else if (appointment.end != event.endStr) {
-            event.setEnd(appointment.end);
-        } else if (appointment.title != event.title) {
-            event.setProp('title', appointment.title);
+        if (!appointment.settled) {
+            handleEventChange({event: {id: appointment.id, title: appointment.title,
+                extendedProps: {description: appointment.description, type: appointment.type,
+                    optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours,
+                    settled: appointment.settled, startStr: appointment.start, endStr: appointment.end}}});
+            const apps = unSettledAppointments.slice();
+            apps[unSettledAppointments.indexOf(appointment)] = appointment;
+            setUnSettledAppointments(apps);
+        } else {
+            const event = calAPI.getEventById(appointment.id);
+            if (appointment.start != event.startStr) {
+                event.setStart(appointment.start);
+            } else if (appointment.end != event.endStr) {
+                event.setEnd(appointment.end);
+            } else if (appointment.title != event.title) {
+                event.setProp('title', appointment.title);
+            }
+            Object.entries(data).forEach(([key, value]) => {
+                if(key == 'start' || key == 'end' || key == 'id' || key == 'title') {
+                    return;
+                }
+                if (value != event.extendedProps[key]) {
+                    event.setExtendedProp(key, value);
+                }
+            });
+            const apps = settledAppointments.slice();
+            apps[settledAppointments.indexOf(appointment)] = appointment;
+            setSettledAppointments(apps);
         }
-        Object.entries(data).forEach(([key, value]) => {
-            if(key == 'start' || key == 'end' || key == 'id' || key == 'title') {
-                return;
-            }
-            if (value != event.extendedProps[key]) {
-                event.setExtendedProp(key, value);
-            }
-        });
     }
 
     const renderEventContent = (eventInfo) => {
@@ -199,7 +218,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
                 <Modal
                 open={open ? open == eventInfo.event.id : false}
                 onClose={handleClose}
-                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
                 // slots={{ backdrop: Backdrop }}
                 // slotProps={{
                 //     backdrop: {

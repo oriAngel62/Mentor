@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import AppAppBar from "/modules/views/AppAppBar";
 import AppFooter from "/modules/views/AppFooter";
 import LoadingScreen from "/modules/views/loading";
+import { appointmentsToEvent } from "../modules/lib/eventAdapter";
 
 
 const getAppointments = async (auth) => {
@@ -29,19 +30,19 @@ const getAppointments = async (auth) => {
   }
   const repo = await res.json()
   console.log("REPO", repo);
-  const setteledAppoitments = []
-  const unSetteledAppoitments = []
+  const settledAppoitments = []
+  const unSettledAppoitments = []
   repo.forEach(element => {
-    if (element.setteled) {
-      setteledAppoitments.push(element)
+    if (element.settled) {
+      settledAppoitments.push(element)
     } else {
-      unSetteledAppoitments.push(element)
+      unSettledAppoitments.push(element)
     }
   });
   return {
       redirect: false,
-      settledAppointments: setteledAppoitments,
-      unSettledAppointments: unSetteledAppoitments,
+      settledAppointments: appointmentsToEvent(settledAppoitments),
+      unSettledAppointments: appointmentsToEvent(unSettledAppoitments),
   };
 };
 
@@ -51,10 +52,11 @@ const getAppointments = async (auth) => {
 function Sched() {
   const auth = useSelector(selectAuthState);
   const router = useRouter();
+  const [settledAppointments, setSettledAppointments] = useState([]);
+  const [unSettledAppointments, setUnSettledAppointments] = useState([]); 
   const [promise, setPromise] = useState(
     {
       redirect: true,
-      text: "Loading...",
     }
   );
   useEffect(() => {
@@ -66,6 +68,8 @@ function Sched() {
       if(res.redirect) {
         redirect();
       }
+      setSettledAppointments(res.settledAppointments);
+      setUnSettledAppointments(res.unSettledAppointments);
     });
   }, []);
   if (promise.redirect) {
@@ -74,7 +78,8 @@ function Sched() {
     return (
       <React.Fragment>
         <AppAppBar />
-          <Demo settledAppointments={promise.settledAppointments} unSettledAppointments={promise.unSettledAppointments} token={auth}/>
+          <Demo settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments}
+                setSettledAppointments={setSettledAppointments} setUnSettledAppointments={setUnSettledAppointments} token={auth}/>
         <AppFooter />
       </React.Fragment>
     )

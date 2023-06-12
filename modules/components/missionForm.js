@@ -61,7 +61,12 @@ export default function MissionForm({
     const handleSubmit = (values) => {
         setSent(true);
         console.log("add:", addAppointment);
+        values.settled = isSettled;
         values.deadline = values.deadline['$d'];
+        if (!isSettled) {
+          values.optionalHours = [values.startHour['$d'], values.endHour['$d']];
+          values.optionalDays = [values.startDay['$d'], values.endDay['$d']];
+        }
         console.log("values:", values);
         addAppointment(values);
         console.log("AFTER CALL");
@@ -141,6 +146,18 @@ export default function MissionForm({
                                 size="large"
                                 defaultValue={appointment ? appointment.description : ""}
                             />
+                            <Field
+                                autoComplete="Type"
+                                autoFocus
+                                component={RFTextField}
+                                disabled={submitting || sent}
+                                fullWidth
+                                label="Type"
+                                margin="normal"
+                                name="type"
+                                size="large"
+                                defaultValue={appointment ? appointment.title : ""}
+                            />
                             {isSettled && (
                                 <>
                                     <Typography variant="body1">
@@ -151,12 +168,13 @@ export default function MissionForm({
                                         size="large"
                                         component={RatingField}
                                         max={10}
-                                        precision={0.1}
+                                        precision={1}
                                         disabled={submitting || sent}
                                         name="rank"
                                         autoComplete="current-password"
                                         label="Rank"
                                         margin="normal"
+                                        readOnly={new Date().getTime() < new Date(appointment.end).getTime()}
                                         defaultValue={appointment ? (appointment.rank ? appointment.rank : 0) : 0}
                                     />
                                     <br />
@@ -193,7 +211,7 @@ export default function MissionForm({
                             <Field
                                 fullWidth
                                 size="large"
-                                component={RFDateField}
+                                component={DateTimePickerField}
                                 disabled={submitting || sent}
                                 required
                                 name="deadline"
@@ -240,6 +258,40 @@ export default function MissionForm({
                                     />
                                     <br />
                                     <br />
+                                    <Typography variant="body1">
+                                        {"Optional days"}
+                                    </Typography>
+                                    <Field
+                                        fullWidth
+                                        size="large"
+                                        component={RFDateField}
+                                        disabled={submitting || sent}
+                                        required
+                                        name="startDay"
+                                        autoComplete="Start day"
+                                        label="Start day"
+                                        margin="normal"
+                                        defaultValue={
+                                          appointment ? (appointment.optionalDays && appointment.optionalDays[0] ? appointment.optionalDays[0].day : null) : null
+                                        }
+                                    />
+                                    <b> _ </b>
+                                    <Field
+                                        fullWidth
+                                        size="large"
+                                        component={RFDateField}
+                                        disabled={submitting || sent}
+                                        required
+                                        name="endDay"
+                                        autoComplete="End day"
+                                        label="End day"
+                                        margin="normal"
+                                        defaultValue={
+                                          appointment ? (appointment.optionalDays && appointment.optionalDays[1] ? appointment.optionalDays[1].day : null) : null
+                                        }
+                                    />
+                                    <br />
+                                    <br />
                                 </>
                             )}
                             <Field
@@ -252,7 +304,7 @@ export default function MissionForm({
                                 label="Priority"
                                 margin="normal"
                                 readOnly={isSettled}
-                                defaultValue={appointment ? appointment.priority : null}
+                                defaultValue={appointment ? appointment.priority : 1}
                             >
                                 <MenuItem value={0}>Low</MenuItem>
                                 <MenuItem value={1}>Medium</MenuItem>
