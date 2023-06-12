@@ -118,11 +118,11 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
     const callAlgorithm = () => {
         const setting = {
             id: 0,
-            startHour: "2023-06-12T01:52:13.937Z",
-            endHour: "2023-06-12T01:52:13.937Z",
-            minGap: 0,
-            maxHoursPerDay: 0,
-            minTimeFrame: 0,
+            startHour: "2023-06-11T09:00:00.000Z",
+            endHour: "2023-06-17T18:00:00.000Z",
+            minGap: 15,
+            maxHoursPerDay: 3,
+            minTimeFrame: 15,
         }
         const unsettledIds = checked2.map((value, index) => {
             if (value) {
