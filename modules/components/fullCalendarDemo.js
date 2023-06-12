@@ -157,6 +157,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
     };
 
     const deleteEvent = (appointment) => {
+        console.log("Calling deleteEvent", calAPI.getEvents())
         if (appointment.setteled) {
             const event = calAPI.getEventById(appointment.id);
             event.remove();
@@ -279,6 +280,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, toke
             }
             slotMinTime={'09:00:00'}
             slotMaxTime={'22:00:00'}
+            allDaySlot={false}
             height={'auto'}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{

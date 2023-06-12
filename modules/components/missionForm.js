@@ -220,7 +220,7 @@ export default function MissionForm({
                                         label="Start hour"
                                         margin="normal"
                                         defaultValue={
-                                          appointment ? (appointment.optionalHours ? appointment.optionalHours[0].hour : null) : null
+                                          appointment ? (appointment.optionalHours && appointment.optionalHours[0] ? appointment.optionalHours[0].hour : null) : null
                                         }
                                     />
                                     <b> _ </b>
@@ -235,7 +235,7 @@ export default function MissionForm({
                                         label="End hour"
                                         margin="normal"
                                         defaultValue={
-                                          appointment ? (appointment.optionalHours ? appointment.optionalHours[1].hour : null) : null
+                                          appointment ? (appointment.optionalHours && appointment.optionalHours[1] ? appointment.optionalHours[1].hour : null) : null
                                         }
                                     />
                                     <br />
