@@ -141,6 +141,8 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
             },
             body: JSON.stringify({setting: setting, missionsId: [...unsettledIds, ...checkedSettledIds]}),
         })
+        // if response is ok, then update the state settledAppointments to be with the new missions, and delete them from unSettledAppointments
+        // or Refresh the page
     };
 
     const settledListItems = settledAppointments.map((appointment, index) => {
