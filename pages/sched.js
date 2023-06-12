@@ -32,7 +32,7 @@ const getAppointments = async (auth) => {
   const setteledAppoitments = []
   const unSetteledAppoitments = []
   repo.forEach(element => {
-    if (element.settled) {
+    if (element.setteled) {
       setteledAppoitments.push(element)
     } else {
       unSetteledAppoitments.push(element)
@@ -40,8 +40,8 @@ const getAppointments = async (auth) => {
   });
   return {
       redirect: false,
-      setteledAppoitments: setteledAppoitments,
-      unSetteledAppoitments: unSetteledAppoitments,
+      settledAppointments: setteledAppoitments,
+      unSettledAppointments: unSetteledAppoitments,
   };
 };
 
@@ -74,7 +74,7 @@ function Sched() {
     return (
       <React.Fragment>
         <AppAppBar />
-          <Demo setteledAppoitments={appointments} unSetteledAppoitments={appointments}/>
+          <Demo settledAppointments={promise.settledAppointments} unSettledAppointments={promise.unSettledAppointments} token={auth}/>
         <AppFooter />
       </React.Fragment>
     )

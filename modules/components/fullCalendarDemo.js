@@ -11,21 +11,22 @@ import MissionForm from './missionForm';
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import ToolBox from './toolBox';
 
-export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
-    const appointments = setteledAppoitments.map((appointment) => {
-        return {
-            id: createEventId(),
-            ...appointment
-        }
-    });
-    appointments.push(...INITIAL_EVENTS);
-    // console.log(appointments);
+export default function Demo ({ settledAppointments, unSettledAppointments, token}) {
+    console.log("SETTLED", settledAppointments);
+    console.log("UNSETTLED", unSettledAppointments);
 
     const [currentEvents, setCurrentEvents] = React.useState([]);
     const [selectedEvent, setSelectedEvent] = React.useState({});
     const [drawer, setDrawer] = React.useState(false);
     const [open, setOpen] = React.useState('');
     const calendarRef = React.useRef(null);
+    const [calAPI, setCalAPI] = React.useState(false);
+
+    React.useEffect(() => {
+        setCalAPI(calendarRef.current.getApi());
+        // Use the calendarApi to interact with the FullCalendar API
+        // For example, you can call calendarApi.next() to navigate to the next view
+      }, [calendarRef]);
 
     const handleClose = (event, reason) => {
         console.log(reason);
@@ -64,36 +65,63 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     }
 
     const handleEventAdd = (addInfo) => {
+        console.log("ENTERED EVENT ADD");
         const event = {
-            id: addInfo.event.id,
+            id: 0,
             title: addInfo.event.title,
             description: addInfo.event.extendedProps.description,
-            type: addInfo.event.extendedProps.type,
-            length: Math.floor(
-                addInfo.event.end - addInfo.event.start / (1000 * 60)
-            ),
+            type: "",
+            length: 5,
             optionalDays: addInfo.event.extendedProps.optionalDays,
             optionalHours: addInfo.event.extendedProps.optionalHours,
             deadLine: addInfo.event.extendedProps.deadLine,
-            priority: addInfo.event.extendedProps.priority,
-            setteled: addInfo.event.extendedProps.setteled,
+            priority: 2,
+            setteled: true,
             startDate: addInfo.event.startStr,
             endDate: addInfo.event.endStr,
         };
-        fetch("http://localhost:7204/api/Missions", {
+        // const event = {
+        //     id: 0,
+        //     title: "string",
+        //     description: "string",
+        //     type: "string",
+        //     length: 0,
+        //     optionalDays: [
+        //       {
+        //         id: 0,
+        //         day: "string"
+        //       }
+        //     ],
+        //     optionalHours: [
+        //       {
+        //         id: 0,
+        //         hour: "string"
+        //       }
+        //     ],
+        //     deadLine: "2023-06-12T00:20:48.323Z",
+        //     priority: 0,
+        //     setteled: true,
+        //     startDate: "2023-06-12T00:20:48.323Z",
+        //     endDate: "2023-06-12T00:20:48.323Z"
+        //   }
+        console.log("SENDING:", event);
+        fetch("https://localhost:7204/api/Missions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: token,
             },
             body: JSON.stringify(event),
+        }).catch((error) => {
+            console.log("FETCH ERROR", error);
         })
-            .then((response) => {
-                return response.getBody();
-            })
-            .then((data) => {
-                console.log(data);
-                addInfo.event.setProp("id", data);
-            });
+        .then((response) => {
+            console.log("FETCH RESPONSE", response);
+            return response.json();
+        }).then((data) => {
+            console.log(data);
+            addInfo.event.setProp("id", data);
+        });
     };
 
     const handleEventChange = (changeInfo) => {
@@ -108,31 +136,43 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             startDate: changeInfo.event.extendedProps.startStr,
             endDate: changeInfo.event.extendedProps.endStr,
         };
-        fetch("http://localhost:7204/api/Missions/0", {
+        fetch("https://localhost:7204/api/Missions/0", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: token,
             },
             body: JSON.stringify(event),
         });
     };
 
     const handleEventRemove = (removeInfo) => {
-        fetch("http://localhost:7204/api/Missions" + removeInfo.event.id, {
+        fetch("https://localhost:7204/api/Missions/" + removeInfo.event.id, {
             method: "DELETE",
             headers: {
                 "Content-Type": "text/plain",
+                Authorization: token,
             },
         });
     };
 
     const deleteEvent = (appointment) => {
-        const event = calendarRef.current.getApi().getEventById(appointment.id);
-        event.remove();
+        if (appointment.setteled) {
+            const event = calAPI.getEventById(appointment.id);
+            event.remove();
+        } else {
+            handleEventRemove({event: {id: appointment.id}});
+        }
+    }
+
+    const addEvent = (appointment) => {
+        console.log("Calling calAPI.addEvent")
+        calAPI.addEvent(appointment);
+        console.log("Called calAPI.addEvent")
     }
 
     const updateEvent = (appointment) => {
-        const event = calendarRef.current.getApi().getEventById(appointment.id);
+        const event = calAPI.getEventById(appointment.id);
         if (appointment.start != event.startStr) {
             event.setStart(appointment.start);
         } else if (appointment.end != event.endStr) {
@@ -151,6 +191,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
     }
 
     const renderEventContent = (eventInfo) => {
+        let calendarAPI = eventInfo.view.calendar;
         return (
             <Typography variant="body2" align="center">
             {eventInfo.timeText} {eventInfo.event.title}
@@ -171,7 +212,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
                 >
                     <MissionForm
                     appointment={eventInfo.event} isSettled={true} updateAppointment={updateEvent}
-                    deleteAppointment={deleteEvent} addAppointment={calendarRef.current.getApi().addEvent} />
+                    deleteAppointment={deleteEvent} addAppointment={addEvent} handleClose={handleClose} />
                 </Modal>
           </Typography>
         );
@@ -205,7 +246,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             onClose={toggleDrawer(false)}
             onOpen={toggleDrawer(true)}
         >
-            <ToolBox data={appointments} setData={()=>{null}} />
+            <ToolBox settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments} addAppointment={addEvent} deleteAppointment={deleteEvent} updateAppointment={updateEvent} token={token}/>
         </SwipeableDrawer>
         <Modal
             open={open == selectedEvent.id}
@@ -223,7 +264,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             aria-labelledby="modal-title"
             >
                 <MissionForm appointment={selectedEvent} isSettled={selectedEvent.settled} updateAppointment={updateEvent}
-                    deleteAppointment={deleteEvent} addAppointment={calendarRef.current.getApi().addEvent} />
+                    deleteAppointment={deleteEvent} addAppointment={addEvent} handleClose={handleClose} />
         </Modal>
         <div className='demo-app-main'>
           <FullCalendar
@@ -250,7 +291,7 @@ export default function Demo ({ setteledAppoitments, unSetteledAppoitments }) {
             selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
-            initialEvents={appointments} // alternatively, use the `events` setting to fetch from a feed
+            initialEvents={settledAppointments} // alternatively, use the `events` setting to fetch from a feed
             select={handleDateSelect}
             eventContent={renderEventContent} // custom render function
             eventClick={(clickInfo)=>{handleEventClick(clickInfo.event.id)}}

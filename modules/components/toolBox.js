@@ -20,9 +20,8 @@ import { useState } from "react";
 import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
 import DeveloperBoardSharpIcon from '@mui/icons-material/DeveloperBoardSharp';
 import { green } from '@mui/material/colors';
-import { Backdrop, backdropClasses } from "@mui/material";
-import { set } from "date-fns";
 import MissionForm from "./missionForm";
+
 
 const style = {
     position: "absolute",
@@ -75,10 +74,16 @@ function a11yProps(index) {
     };
 }
 
-export default function ToolBox({ data, setData }) {
+export default function ToolBox({ settledAppointments, unSettledAppointments, addAppointment, deleteAppointment, updateAppointment, token}) {
     const [checked, setChecked] = React.useState([0]);
+    const [checked2, setChecked2] = React.useState(Array(unSettledAppointments.length).fill(false));
     const [open, setOpen] = React.useState(false);
+    const [modal, setModal] = React.useState(false);
     const [tab, setTab] = React.useState(0);
+
+    const handleModal = () => {
+        setModal(false);
+    };
 
     const handleTab = (event, newValue) => {
         setTab(newValue);
@@ -104,13 +109,47 @@ export default function ToolBox({ data, setData }) {
         setChecked(newChecked);
     };
 
-    const listItems = data.map((appointment, index) => {
+    const handleToggle2 = (index) => () => {
+        const newChecked = [...checked2];
+        newChecked[index] = !newChecked[index];
+        setChecked2(newChecked);
+    };
+
+    const callAlgorithm = () => {
+        const setting = {
+            id: 0,
+            startHour: "2023-06-12T01:52:13.937Z",
+            endHour: "2023-06-12T01:52:13.937Z",
+            minGap: 0,
+            maxHoursPerDay: 0,
+            minTimeFrame: 0,
+        }
+        const unsettledIds = checked2.map((value, index) => {
+            if (value) {
+                return unSettledAppointments[index].id;
+            }
+        });
+        const checkedSettledIds = settledAppointments
+        .filter(appointment => checked.includes(appointment.id)) // Filter appointments based on checked IDs
+        .map(appointment => appointment.id);
+
+        fetch("https://localhost:7204/api/Algo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+            },
+            body: JSON.stringify({setting: setting, missionsId: [...unsettledIds, ...checkedSettledIds]}),
+        })
+    };
+
+    const settledListItems = settledAppointments.map((appointment, index) => {
         const labelId = `checkbox-list-label-${appointment.id}`;
         return (
             <ListItem
                 key={appointment.id}
                 secondaryAction={
-                    <IconButton edge="end" aria-label="delete">
+                    <IconButton edge="end" aria-label="delete" onClick={()=>{deleteAppointment(appointment)}}>
                         <DeleteIcon />
                     </IconButton>
                 }
@@ -132,7 +171,7 @@ export default function ToolBox({ data, setData }) {
                 >
                     <ListItemText
                         primary={appointment.title}
-                        secondary={"Secondary text"}
+                        secondary={appointment.description}
                     />
                 </ListItemButton>
                 <Modal
@@ -157,8 +196,73 @@ export default function ToolBox({ data, setData }) {
                     <MissionForm
                         appointment={appointment}
                         isSettled={appointment.settled}
-                        updateAppointment={() => {}}
-                        deleteAppointment={() => {}}
+                        updateAppointment={updateAppointment}
+                        deleteAppointment={deleteAppointment}
+                        addAppointment={addAppointment}
+                        handleClose={handleClose}
+                    />
+                </Modal>
+            </ListItem>
+        );
+    });
+
+    const unSettledListItems = unSettledAppointments.map((appointment, index) => {
+        const labelId = `checkbox-list-label-${appointment.id}`;
+        return (
+            <ListItem
+                key={appointment.id}
+                secondaryAction={
+                    <IconButton edge="end" aria-label="delete" onClick={()=>{deleteAppointment(appointment)}}>
+                        <DeleteIcon />
+                    </IconButton>
+                }
+            >
+                <ListItemIcon>
+                    <Checkbox
+                        edge="start"
+                        checked={checked2[index]}
+                        tabIndex={appointment.id}
+                        disableRipple
+                        inputProps={{ "aria-labelledby": labelId }}
+                        onClick={handleToggle2(index)}
+                    />
+                </ListItemIcon>
+                <ListItemButton
+                    role={undefined}
+                    onClick={() => handleOpen(appointment.id)}
+                    dense
+                >
+                    <ListItemText
+                        primary={appointment.title}
+                        secondary={appointment.description}
+                    />
+                </ListItemButton>
+                <Modal
+                    open={open ? open == appointment.id : false}
+                    onClose={handleClose}
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                    // slots={{ backdrop: Backdrop }}
+                    // slotProps={{
+                    //     backdrop: {
+                    //     sx: {
+                    //         borderColor: 'rgba(255, 255, 255, 0)',
+                    //         backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                    //     },
+                    //     },
+                    // }}
+                    aria-labelledby="modal-title"
+                >
+                    <MissionForm
+                        appointment={appointment}
+                        isSettled={appointment.settled}
+                        updateAppointment={updateAppointment}
+                        deleteAppointment={deleteAppointment}
+                        addAppointment={addAppointment}
+                        handleClose={handleClose}
                     />
                 </Modal>
             </ListItem>
@@ -168,12 +272,30 @@ export default function ToolBox({ data, setData }) {
     return (
         <React.Fragment>
             <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
-                <IconButton edge="end" aria-label="algorithm" alignItems="left">
+                <IconButton edge="end" aria-label="algorithm" onClick={callAlgorithm}>
                             <DeveloperBoardSharpIcon fontSize="large" sx={{ color: green[500] }}/>
                 </IconButton>
-                <IconButton edge="end" aria-label="add" color="secondary" >
+                <IconButton edge="end" aria-label="add" color="secondary" onClick={()=>{setModal(true)}}>
                             <AddCircleSharpIcon fontSize="large"/>
                 </IconButton>
+                <Modal
+                    open={modal}
+                    onClose={handleModal}
+                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    // slots={{ backdrop: Backdrop }}
+                    // slotProps={{
+                    //     backdrop: {
+                    //     sx: {
+                    //         borderColor: 'rgba(255, 255, 255, 0)',
+                    //         backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                    //     },
+                    //     },
+                    // }}
+                    aria-labelledby="modal-title"
+                    >
+                        <MissionForm appointment={{}} isSettled={false} updateAppointment={updateAppointment}
+                            deleteAppointment={deleteAppointment} addAppointment={addAppointment} handleClose={handleModal} />
+                </Modal>
                 <Tabs
                     value={tab}
                     onChange={handleTab}
@@ -187,12 +309,16 @@ export default function ToolBox({ data, setData }) {
                 <TabPanel value={tab} index={0}>
                     <Grid item xs={12} md={6}>
                         <Demo>
-                            <List>{listItems}</List>
+                            <List>{unSettledListItems}</List>
                         </Demo>
                     </Grid>
                 </TabPanel>
                 <TabPanel value={tab} index={1}>
-                    Item Two
+                    <Grid item xs={12} md={6}>
+                        <Demo>
+                            <List>{settledListItems}</List>
+                        </Demo>
+                    </Grid>
                 </TabPanel>
             </Box>
         </React.Fragment>
