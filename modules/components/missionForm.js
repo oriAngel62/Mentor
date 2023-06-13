@@ -225,7 +225,7 @@ export default function MissionForm({
                                 autoComplete="Deadline"
                                 label="Deadline"
                                 margin="normal"
-                                defaultValue={appointment ? (isSettled ? (appointment.extendedProps && appointment.extendedProps.deadLine ? new Date(appointment.extendedProps.deadLine) : null) : (appointment.deadLine ? new Date(appointment.deadLine) : null)) : null}
+                                defaultValue={appointment ? (isSettled ? (appointment.extendedProps && appointment.extendedProps.deadline ? new Date(appointment.extendedProps.deadline) : null) : (appointment.deadLine ? new Date(appointment.deadline) : null)) : null}
                             />
                             <br />
                             <br />
