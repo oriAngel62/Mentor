@@ -105,11 +105,13 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             if (!addInfo.event.extendedProps.settled) {
                 console.log("UN AFTER ADD FETCH" ,unSettledAppointments);
                 unSettledAppointments[unSettledAppointments.length - 1].id = data;
-                setUnSettledAppointments(unSettledAppointments);
+                const apps = unSettledAppointments.slice();
+                setUnSettledAppointments(apps);
             } else {
                 addInfo.event.setProp("id", data);
                 settledAppointments[settledAppointments.length - 1].id = data;
-                setSettledAppointments(settledAppointments);
+                const apps = settledAppointments.slice();
+                setSettledAppointments(apps);
             }  
         });
     };
@@ -188,25 +190,28 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
     }
 
     const updateEvent = (appointment) => {
+        console.log("Calling updateEvent", appointment)
         if (!appointment.settled) {
-            handleEventChange({event: {id: appointment.id, title: appointment.title,
-                extendedProps: {description: appointment.description, type: appointment.type,
-                    optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours,
-                    settled: appointment.settled, startStr: appointment.start, endStr: appointment.end}}});
+            handleEventChange({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
+                optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
+                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority,}}});
             const apps = unSettledAppointments.slice();
             const index = apps.findIndex((app) => app.id === appointment.id);
             apps[index] = appointment;
             setUnSettledAppointments(apps);
         } else {
             const event = calAPI.getEventById(appointment.id);
+            console.log("Event TO UPDATE", event);
             if (appointment.start != event.startStr) {
                 event.setStart(appointment.start);
-            } else if (appointment.end != event.endStr) {
+            }
+            if (appointment.end != event.endStr) {
                 event.setEnd(appointment.end);
-            } else if (appointment.title != event.title) {
+            }
+            if (appointment.title != event.title) {
                 event.setProp('title', appointment.title);
             }
-            Object.entries(data).forEach(([key, value]) => {
+            Object.entries(appointment).forEach(([key, value]) => {
                 if(key == 'start' || key == 'end' || key == 'id' || key == 'title') {
                     return;
                 }

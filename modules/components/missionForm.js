@@ -62,6 +62,7 @@ export default function MissionForm({
     const handleSubmit = (values) => {
         setSent(true);
         console.log("add:", addAppointment);
+        values.id = appointment ? appointment.id : 0;
         values.settled = isSettled;
         values.deadline = values.deadline['$d'];
         if (!isSettled) {
@@ -69,6 +70,9 @@ export default function MissionForm({
           values.optionalDays = values.optionalDays.map((day) => {
             return {day: day};
           });
+        } else {
+          values.end = values.end['$d'];
+          values.start = values.start['$d'];
         }
         console.log("values:", values);
         if (!appointment.title) {
