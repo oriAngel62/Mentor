@@ -62,7 +62,7 @@ export default function MissionForm({
     const handleSubmit = (values) => {
         setSent(true);
         console.log("add:", addAppointment);
-        values.isSettled = isSettled;
+        values.settled = isSettled;
         values.deadline = values.deadline['$d'];
         if (!isSettled) {
           values.optionalHours = [{hour: values.startHour['$d']}, {hour: values.endHour['$d']}];

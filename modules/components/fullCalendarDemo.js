@@ -80,7 +80,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             optionalDays: addInfo.event.extendedProps.optionalDays,
             optionalHours: addInfo.event.extendedProps.optionalHours,
             deadLine: addInfo.event.extendedProps.deadline,
-            priority: 2,
+            priority: addInfo.event.extendedProps.priority,
             settled: addInfo.event.extendedProps.settled,
             startDate: addInfo.event.startStr,
             endDate: addInfo.event.endStr,
@@ -115,6 +115,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
     };
 
     const handleEventChange = (changeInfo) => {
+        console.log("ENTERED HANDLE EVENT CHANGE", changeInfo);
         const event = {
             id: changeInfo.event.id,
             title: changeInfo.event.title,
@@ -125,6 +126,9 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             settled: changeInfo.event.extendedProps.settled,
             startDate: changeInfo.event.startStr,
             endDate: changeInfo.event.endStr,
+            rank: changeInfo.event.extendedProps.rank,
+            deadLine: changeInfo.event.extendedProps.deadline,
+            priority: changeInfo.event.extendedProps.priority,
         };
         fetch("https://localhost:7204/api/Missions/0", {
             method: "PUT",
@@ -172,7 +176,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             setUnSettledAppointments(apps);
             handleEventAdd({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
                 optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
-                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadLine, priority: appointment.priority,}}});
+                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority,}}});
         } else {
             apps = settledAppointments.slice();
             apps.push(appointment);
