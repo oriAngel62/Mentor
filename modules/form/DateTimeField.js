@@ -23,7 +23,7 @@ function DateTimeField(props) {
         {...other}
         name={name}
         label={label}
-        value={value || null}
+        value={value}
         onChange={handleDateTimeChange}
         onBlur={onBlur}
         renderInput={(params) => <TextField {...params} />} // Replace with your custom input component

@@ -124,15 +124,18 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
             maxHoursPerDay: 6,
             minTimeFrame: 15,
         }
+        console.log("Check2:", checked2);
+        console.log("Check:", checked);
         const unsettledIds = checked2.map((value, index) => {
             if (value) {
                 return unSettledAppointments[index].id;
             }
-        });
+        }).filter(value => value !== undefined);
         const checkedSettledIds = settledAppointments
         .filter(appointment => checked.includes(appointment.id)) // Filter appointments based on checked IDs
-        .map(appointment => appointment.id);
-
+        .map(appointment => parseInt(appointment.id));
+        console.log("Unsettled:", unsettledIds);
+        console.log("Settled:", checkedSettledIds);
         fetch("https://localhost:7204/api/Algo", {
             method: "POST",
             headers: {

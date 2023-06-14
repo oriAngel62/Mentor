@@ -16,7 +16,7 @@ import MenuItem from "@mui/material/MenuItem";
 import SelectField from "../form/SelectField";
 import TimeField from "../form/TimeField";
 import ModalForm from "../views/ModalForm";
-import DateTimePickerField from "../form/DateTimeField";
+import DateTimeField from "../form/DateTimeField";
 import Button from '@mui/material/Button';
 import MultiSelectField from "../form/MultiSelectField";
 
@@ -30,6 +30,7 @@ export default function MissionForm({
 }) {
     // deleteAppointment(appointment);
     console.log("appointmentData:", appointment);
+    console.log("Title", appointment.title);
     const [sent, setSent] = React.useState(false);
 
     const validate = (values) => {
@@ -62,6 +63,7 @@ export default function MissionForm({
     const handleSubmit = (values) => {
         setSent(true);
         console.log("add:", addAppointment);
+        console.log("values first:", values);
         values.id = appointment ? appointment.id : 0;
         values.settled = isSettled;
         values.deadline = values.deadline['$d'];
@@ -142,7 +144,7 @@ export default function MissionForm({
                                 margin="normal"
                                 name="title"
                                 size="large"
-                                defaultValue={appointment ? appointment.title : ""}
+                                defaultValue={appointment.title}
                             />
                             <Field
                                 autoComplete="Description"
@@ -155,7 +157,7 @@ export default function MissionForm({
                                 margin="normal"
                                 name="description"
                                 size="large"
-                                defaultValue={isSettled ? (appointment.extendedProps ? appointment.extendedProps.optionalDays : []) : (appointment ? appointment.description : [])}
+                                defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.description : appointment.description) : ""}
                             />
                             <Field
                                 autoComplete="Type"
@@ -167,7 +169,7 @@ export default function MissionForm({
                                 margin="normal"
                                 name="type"
                                 size="large"
-                                defaultValue={appointment ? (isSettled && appointment.extendedProps ? appointment.extendedProps.type : appointment.type) : ""}
+                                defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.type : appointment.type) : ""}
                             />
                             {isSettled && (
                                 <>
@@ -186,34 +188,34 @@ export default function MissionForm({
                                         label="Rank"
                                         margin="normal"
                                         readOnly={new Date().getTime() < new Date(appointment.end).getTime()}
-                                        defaultValue={appointment ? (appointment.extendedProps ? appointment.extendedProps.rank : 0) : 0}
+                                        defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.rank : appointment.rank) : 0}
                                     />
                                     <br />
                                     <br />
                                     <Field
                                       fullWidth
                                       size="large"
-                                      component={DateTimePickerField}
+                                      component={DateTimeField}
                                       disabled={submitting || sent}
                                       required
                                       name="start"
                                       autoComplete="Start"
                                       label="Start"
                                       margin="normal"
-                                      defaultValue={appointment ? (appointment.start ? appointment.start : null) : null}
+                                      defaultValue={appointment.start}
                                     />
                                     <b> _ </b>
                                     <Field
                                         fullWidth
                                         size="large"
-                                        component={DateTimePickerField}
+                                        component={DateTimeField}
                                         disabled={submitting || sent}
                                         required
                                         name="end"
                                         autoComplete="End"
                                         label="End"
                                         margin="normal"
-                                        defaultValue={appointment ? (appointment.end ? appointment.end : null) : null}
+                                        defaultValue={appointment.end}
                                     />
                                     <br />
                                     <br />
@@ -222,14 +224,14 @@ export default function MissionForm({
                             <Field
                                 fullWidth
                                 size="large"
-                                component={DateTimePickerField}
+                                component={DateTimeField}
                                 disabled={submitting || sent}
                                 required
                                 name="deadline"
                                 autoComplete="Deadline"
                                 label="Deadline"
                                 margin="normal"
-                                defaultValue={appointment ? (isSettled ? (appointment.extendedProps && appointment.extendedProps.deadline ? new Date(appointment.extendedProps.deadline) : null) : (appointment.deadLine ? new Date(appointment.deadline) : null)) : null}
+                                defaultValue={appointment.title ? (appointment.extendedProps ? new Date(appointment.extendedProps.deadline) : new Date(appointment.deadline)) : null}
                             />
                             <br />
                             <br />
@@ -249,7 +251,7 @@ export default function MissionForm({
                                         label="Start hour"
                                         margin="normal"
                                         defaultValue={
-                                          appointment ? (appointment.optionalHours && appointment.optionalHours[0] ? new Date(appointment.optionalHours[0].hour) : null) : null
+                                          appointment.title ? (appointment.optionalHours && appointment.optionalHours[0] ? new Date(appointment.optionalHours[0].hour) : null) : null
                                         }
                                     />
                                     <b> _ </b>
@@ -264,7 +266,7 @@ export default function MissionForm({
                                         label="End hour"
                                         margin="normal"
                                         defaultValue={
-                                          appointment ? (appointment.optionalHours && appointment.optionalHours[1] ? new Date(appointment.optionalHours[1].hour) : null) : null
+                                          appointment.title ? (appointment.optionalHours && appointment.optionalHours[1] ? new Date(appointment.optionalHours[1].hour) : null) : null
                                         }
                                     />
                                     <br />
@@ -279,7 +281,7 @@ export default function MissionForm({
                                         label="OptionalDays"
                                         margin="normal"
                                         readOnly={isSettled}
-                                        defaultValue={appointment && appointment.optionalDays ? appointment.optionalDays.map(day=>day.day) : []}
+                                        defaultValue={appointment.optionalDays ? appointment.optionalDays.map(day=>day.day) : []}
                                         multiple
                                     >
                                         <MenuItem key={0} value={'Sunday'}>Sunday</MenuItem>
@@ -304,7 +306,7 @@ export default function MissionForm({
                                 label="Priority"
                                 margin="normal"
                                 readOnly={isSettled}
-                                defaultValue={appointment ? (isSettled && appointment.extendedProps && appointment.extendedProps.priority ? appointment.extendedProps.priority : 1) : 1}
+                                defaultValue={appointment.priority ? appointment.priority :(appointment.extendedProps && appointment.extendedProps.priority ? appointment.extendedProps.priority : 1)}
                             >
                                 <MenuItem value={0}>Low</MenuItem>
                                 <MenuItem value={1}>Medium</MenuItem>
@@ -328,9 +330,9 @@ export default function MissionForm({
                             >
                                 {submitting || sent ? "In progress…" : "Save"}
                             </FormButton>
-                            <Button sx={{ mt: 3, mb: 2 }} size="large" color="warning" variant="contained" onClick={()=>{deleteAppointment(appointment)}}>
+                            {appointment.title && <Button sx={{ mt: 3, mb: 2 }} size="large" color="warning" variant="contained" onClick={()=>{deleteAppointment(appointment)}}>
                               Delete
-                            </Button>
+                            </Button>}
                         </Box>
                     )}
                 </Form>
