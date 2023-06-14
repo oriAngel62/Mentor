@@ -53,13 +53,18 @@ function Sched() {
   const auth = useSelector(selectAuthState);
   const router = useRouter();
   const [settledAppointments, setSettledAppointments] = useState([]);
-  const [unSettledAppointments, setUnSettledAppointments] = useState([]); 
+  const [unSettledAppointments, setUnSettledAppointments] = useState([]);
+  let [fetching, setFetching] = useState(true);
+  const reFetch = () => {
+    setFetching(!fetching);
+  };
   const [promise, setPromise] = useState(
     {
       redirect: true,
     }
   );
   useEffect(() => {
+    console.log("Fetching appointments");
     const redirect = () => {
       router.push("/in/sign-in");
     };
@@ -71,14 +76,14 @@ function Sched() {
       setSettledAppointments(res.settledAppointments);
       setUnSettledAppointments(res.unSettledAppointments);
     });
-  }, []);
+  }, [fetching]);
   if (promise.redirect) {
     return (<LoadingScreen />);
   } else {
     return (
       <React.Fragment>
         <AppAppBar />
-          <Demo settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments}
+          <Demo settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments} reFetch={reFetch}
                 setSettledAppointments={setSettledAppointments} setUnSettledAppointments={setUnSettledAppointments} token={auth}/>
         <AppFooter />
       </React.Fragment>

@@ -74,7 +74,8 @@ function a11yProps(index) {
     };
 }
 
-export default function ToolBox({ settledAppointments, unSettledAppointments, addAppointment, deleteAppointment, updateAppointment, token}) {
+export default function ToolBox({ settledAppointments, unSettledAppointments, addAppointment, deleteAppointment,
+                                    updateAppointment, token, setSettledAppointments, setUnSettledAppointments, reFetch }) {
     const [checked, setChecked] = React.useState([0]);
     const [checked2, setChecked2] = React.useState(Array(unSettledAppointments.length).fill(false));
     const [open, setOpen] = React.useState(false);
@@ -143,7 +144,29 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
                 Authorization: token,
             },
             body: JSON.stringify({setting: setting, missionsId: [...unsettledIds, ...checkedSettledIds]}),
+        }).catch((error) => {
+            console.log("FETCH ERROR", error);
         })
+        .then((response) => {
+            console.log("FETCH RESPONSE", response);
+            return response.json();
+        }).then((data) => {
+            console.log("FETCH DATA", data);
+            let missions = data.missions;
+            let newSettledAppointments = [];
+            let newUnSettledAppointments = [];
+            missions.forEach((mission) => {
+                if (mission.settled) {
+                    newSettledAppointments.push(mission)
+                } else {
+                    newUnSettledAppointments.push(mission)
+                }
+            });
+            setSettledAppointments(newSettledAppointments);
+            setUnSettledAppointments(newUnSettledAppointments);
+            // reFetch();
+        });
+        
         // if response is ok, then update the state settledAppointments to be with the new missions, and delete them from unSettledAppointments
         // or Refresh the page
     };

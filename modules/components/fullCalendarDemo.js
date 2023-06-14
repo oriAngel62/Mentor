@@ -11,7 +11,7 @@ import MissionForm from './missionForm';
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import ToolBox from './toolBox';
 
-export default function Demo ({ settledAppointments, unSettledAppointments, setSettledAppointments, setUnSettledAppointments, token}) {
+export default function Demo ({ settledAppointments, unSettledAppointments, setSettledAppointments, setUnSettledAppointments, token, reFetch }) {
     console.log("SETTLED", settledAppointments);
     console.log("UNSETTLED", unSettledAppointments);
 
@@ -22,14 +22,38 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
     const calendarRef = React.useRef(null);
     const [calAPI, setCalAPI] = React.useState(false);
 
+    const reFetchEvents = () => {
+        if (calAPI) {
+            calAPI.refetchEvents();
+        }
+    }
+
+    const getAppointments = () => {
+        return settledAppointments;
+    }
+
     React.useEffect(() => {
         setCalAPI(calendarRef.current.getApi());
         // Use the calendarApi to interact with the FullCalendar API
         // For example, you can call calendarApi.next() to navigate to the next view
         // let cal = calendarRef.current.getApi();
-        // cal.addEventSource({events: settledAppointments});
+        // cal.addEventSource({events: (info, successCallback, failureCallback)=>{
+        //     console.log("Settled appointments at Refetch", getAppointments());
+        //     successCallback(getAppointments())}});
         // cal.refetchEvents();
       }, [calendarRef]);
+
+    //   React.useEffect(() => {
+    //     console.log("Refetching events")
+    //     // let cal = calendarRef.current.getApi();
+    //     // cal.getEventSources().forEach((source) => {
+    //     //     source.remove();
+    //     // });
+    //     // cal.addEventSource({events: reFetchEvents});
+    //     // cal.addEventSource({events: settledAppointments});
+    //     // cal.refetchEvents();
+    //     // reFetchEvents();
+    //   }, [settledAppointments]);
 
     const handleClose = (event, reason) => {
         console.log(reason);
@@ -76,7 +100,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             title: addInfo.event.title,
             description: addInfo.event.extendedProps.description,
             type: addInfo.event.extendedProps.type,
-            length: 60,
+            length: addInfo.event.extendedProps.length,
             optionalDays: addInfo.event.extendedProps.optionalDays,
             optionalHours: addInfo.event.extendedProps.optionalHours,
             deadLine: addInfo.event.extendedProps.deadline,
@@ -131,6 +155,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             rank: changeInfo.event.extendedProps.rank,
             deadLine: changeInfo.event.extendedProps.deadline,
             priority: changeInfo.event.extendedProps.priority,
+            length: changeInfo.event.extendedProps.length,
         };
         fetch("https://localhost:7204/api/Missions/0", {
             method: "PUT",
@@ -178,7 +203,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             setUnSettledAppointments(apps);
             handleEventAdd({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
                 optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
-                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority,}}});
+                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority, length: appointment.length,}}});
         } else {
             apps = settledAppointments.slice();
             apps.push(appointment);
@@ -194,7 +219,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
         if (!appointment.settled) {
             handleEventChange({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
                 optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
-                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority,}}});
+                startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority, length: appointment.length,}}});
             const apps = unSettledAppointments.slice();
             const index = apps.findIndex((app) => app.id === appointment.id);
             apps[index] = appointment;
@@ -227,7 +252,6 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
     }
 
     const renderEventContent = (eventInfo) => {
-        let calendarAPI = eventInfo.view.calendar;
         return (
             <Typography variant="body2" align="center">
             {eventInfo.timeText} {eventInfo.event.title}
@@ -282,7 +306,8 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             onClose={toggleDrawer(false)}
             onOpen={toggleDrawer(true)}
         >
-            <ToolBox settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments} addAppointment={addEvent} deleteAppointment={deleteEvent} updateAppointment={updateEvent} token={token}/>
+            <ToolBox settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments} setSettledAppointments={setSettledAppointments} reFetch={reFetchEvents}
+            setUnSettledAppointments={setUnSettledAppointments} addAppointment={addEvent} deleteAppointment={deleteEvent} updateAppointment={updateEvent} token={token}/>
         </SwipeableDrawer>
         <Modal
             open={open == selectedEvent.id}
