@@ -133,7 +133,7 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
         }).filter(value => value !== undefined);
         const checkedSettledIds = settledAppointments
         .filter(appointment => checked.includes(appointment.id)) // Filter appointments based on checked IDs
-        .map(appointment => parseInt(appointment.id));
+        .map(appointment => parseInt(appointment.id, 10));
         console.log("Unsettled:", unsettledIds);
         console.log("Settled:", checkedSettledIds);
         fetch("https://localhost:7204/api/Algo", {

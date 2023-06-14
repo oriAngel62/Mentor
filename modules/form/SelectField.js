@@ -16,7 +16,7 @@ function SelectField(props) {
   };
 
   return (
-    <FormControl error={Boolean(touched && (error || submitError))} fullWidth>
+    <FormControl error={Boolean(touched && (error || submitError))}>
       <InputLabel>{label}</InputLabel>
       <Select
         {...other}

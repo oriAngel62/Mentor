@@ -76,7 +76,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             title: addInfo.event.title,
             description: addInfo.event.extendedProps.description,
             type: addInfo.event.extendedProps.type,
-            length: 5,
+            length: 60,
             optionalDays: addInfo.event.extendedProps.optionalDays,
             optionalHours: addInfo.event.extendedProps.optionalHours,
             deadLine: addInfo.event.extendedProps.deadline,

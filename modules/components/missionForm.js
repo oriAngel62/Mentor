@@ -45,6 +45,12 @@ export default function MissionForm({
             ["title", "deadline", "startHour", "endHour", "priority"],
             values
         );
+        const l = parseInt(values.length, 10);
+        if (!l) {
+            errors.length = "Length must be a number";
+        } else if (l < 60) {
+            errors.length = "Length must be at least 60";
+        }
       }
       return errors;
     };
@@ -72,6 +78,7 @@ export default function MissionForm({
           values.optionalDays = values.optionalDays.map((day) => {
             return {day: day};
           });
+          values.length = parseInt(values.length, 10);
         } else {
           values.end = values.end['$d'];
           values.start = values.start['$d'];
@@ -139,12 +146,23 @@ export default function MissionForm({
                                 autoFocus
                                 component={RFTextField}
                                 disabled={submitting || sent}
-                                fullWidth
                                 label="Title"
                                 margin="normal"
                                 name="title"
                                 size="large"
                                 defaultValue={appointment.title}
+                            />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <Field
+                                autoComplete="Type"
+                                autoFocus
+                                component={RFTextField}
+                                disabled={submitting || sent}
+                                label="Type"
+                                margin="normal"
+                                name="type"
+                                size="large"
+                                defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.type : appointment.type) : ""}
                             />
                             <Field
                                 autoComplete="Description"
@@ -159,18 +177,7 @@ export default function MissionForm({
                                 size="large"
                                 defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.description : appointment.description) : ""}
                             />
-                            <Field
-                                autoComplete="Type"
-                                autoFocus
-                                component={RFTextField}
-                                disabled={submitting || sent}
-                                fullWidth
-                                label="Type"
-                                margin="normal"
-                                name="type"
-                                size="large"
-                                defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.type : appointment.type) : ""}
-                            />
+                            <br />
                             {isSettled && (
                                 <>
                                     <Typography variant="body1">
@@ -296,22 +303,40 @@ export default function MissionForm({
                                     <br />
                                 </>
                             )}
-                            <Field
-                                size="large"
-                                component={SelectField}
-                                disabled={submitting || sent}
-                                required
-                                name="priority"
-                                autoComplete="Priority"
-                                label="Priority"
-                                margin="normal"
-                                readOnly={isSettled}
-                                defaultValue={appointment.priority ? appointment.priority :(appointment.extendedProps && appointment.extendedProps.priority ? appointment.extendedProps.priority : 1)}
-                            >
-                                <MenuItem value={0}>Low</MenuItem>
-                                <MenuItem value={1}>Medium</MenuItem>
-                                <MenuItem value={2}>High</MenuItem>
-                            </Field>
+                            <Box sx={{display: 'flex'}}>
+                                <Field
+                                    size="large"
+                                    component={SelectField}
+                                    disabled={submitting || sent}
+                                    sx={{flexGrow: 1}}
+                                    required
+                                    name="priority"
+                                    autoComplete="Priority"
+                                    label="Priority"
+                                    margin="normal"
+                                    readOnly={isSettled}
+                                    defaultValue={appointment.priority ? appointment.priority :(appointment.extendedProps && appointment.extendedProps.priority ? appointment.extendedProps.priority : 1)}
+                                >
+                                    <MenuItem value={2}>Low</MenuItem>
+                                    <MenuItem value={1}>Medium</MenuItem>
+                                    <MenuItem value={0}>High</MenuItem>
+                                </Field>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {!isSettled && (
+                                    <Field
+                                    autoComplete="60"
+                                    autoFocus
+                                    component={RFTextField}
+                                    disabled={submitting || sent}
+                                    label="Length (minutes)"
+                                    margin="normal"
+                                    name="length"
+                                    size="large"
+                                    pattern='[0-9]*'
+                                    inputMode='numeric'
+                                    defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.length: appointment.length) : '60'}
+                                />)}
+                            </Box>
                             <FormSpy subscription={{ submitError: true }}>
                                 {({ submitError }) =>
                                     submitError ? (
