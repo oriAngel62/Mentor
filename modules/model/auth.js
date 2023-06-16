@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { set } from 'date-fns';
+import { stat } from 'fs';
 import { HYDRATE } from "next-redux-wrapper";
 
 
@@ -6,6 +8,7 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState: {
     authState: false,
+    userNameState: "",
   },
   reducers: {
     setAuthState: (state, action) => {
@@ -15,6 +18,10 @@ export const authSlice = createSlice({
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       state.authState = action.payload
+    },
+    setUserNameState: (state, action) => {
+      console.log("Action", action);
+      state.userNameState = action.payload
     }
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
@@ -35,9 +42,10 @@ export const authSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setAuthState } = authSlice.actions
+export const { setAuthState, setUserNameState } = authSlice.actions
 
 export const selectAuthState = (state) => state.auth.authState;
+export const selectUserNameState = (state) => state.auth.userNameState;
 
 
 export default authSlice.reducer

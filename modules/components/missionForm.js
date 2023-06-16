@@ -48,8 +48,8 @@ export default function MissionForm({
         const l = parseInt(values.length, 10);
         if (!l) {
             errors.length = "Length must be a number";
-        } else if (l < 60) {
-            errors.length = "Length must be at least 60";
+        } else if (l < 15) {
+            errors.length = "Length must be at least 15";
         }
       }
       return errors;
@@ -238,7 +238,7 @@ export default function MissionForm({
                                 autoComplete="Deadline"
                                 label="Deadline"
                                 margin="normal"
-                                defaultValue={appointment.title ? (appointment.extendedProps ? new Date(appointment.extendedProps.deadline) : new Date(appointment.deadline)) : null}
+                                defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.deadline : appointment.deadline) : null}
                             />
                             <br />
                             <br />

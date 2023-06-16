@@ -6,7 +6,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import Typography from '@mui/material/Typography';
 import DeleteIcon from "@mui/icons-material/Delete";
 import Checkbox from "@mui/material/Checkbox";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -19,8 +19,10 @@ import Tab from "@mui/material/Tab";
 import { useState } from "react";
 import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
 import DeveloperBoardSharpIcon from '@mui/icons-material/DeveloperBoardSharp';
+import AssistantSharpIcon from '@mui/icons-material/AssistantSharp';
 import { green } from '@mui/material/colors';
 import MissionForm from "./missionForm";
+import SuggestForm from "../views/suggestForm";
 
 
 const style = {
@@ -81,6 +83,7 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
     const [open, setOpen] = React.useState(false);
     const [modal, setModal] = React.useState(false);
     const [tab, setTab] = React.useState(0);
+    const [suggest, setSuggest] = React.useState(false);
 
     const handleModal = () => {
         setModal(false);
@@ -95,6 +98,13 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
     const handleClose = (event, reason) => {
         console.log(reason);
         setOpen("");
+    };
+
+    const handleSuggestOpen = (id) => {
+        setSuggest(true);
+    };
+    const handleSuggestClose = (event, reason) => {
+        setSuggest(false);
     };
 
     const handleToggle = (value) => () => {
@@ -114,6 +124,26 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
         const newChecked = [...checked2];
         newChecked[index] = !newChecked[index];
         setChecked2(newChecked);
+    };
+
+    const callSuggest = (type) => {
+        fetch("https://localhost:7204/api/Missions/SuggestMissions?type=" + type, {
+            method: "GET",
+            headers: {
+                accept: "text/plain",
+                Authorization: token,
+                },
+                }).then((res) => {
+                    if (!res.ok) {
+                        throw new Error("HTTP error " + res.status);
+                    }
+                    return res.json();
+                }).then((res) => {
+                    setUnSettledAppointments(unSettledAppointments.concat(res));
+                }).catch((err) => {
+                    console.log(err);
+                }
+            );
     };
 
     const callAlgorithm = () => {
@@ -349,6 +379,17 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
                     </Grid>
                 </TabPanel>
             </Box>
+            <Modal
+                    open={suggest}
+                    onClose={handleSuggestClose}
+                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    aria-labelledby="modal-title"
+                    >
+                        <SuggestForm handleClose={handleSuggestClose} suggest={callSuggest} />
+                </Modal>
+            <IconButton edge="end" aria-label="add" color="secondary" onClick={handleSuggestOpen}>
+                            <AssistantSharpIcon fontSize="large"/>
+            </IconButton>
         </React.Fragment>
     );
 }

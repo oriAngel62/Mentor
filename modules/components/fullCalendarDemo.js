@@ -8,10 +8,11 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import Typography from '../components/Typography';
 import Modal from '@mui/material/Modal';
 import MissionForm from './missionForm';
-import { INITIAL_EVENTS, createEventId } from './event-utils'
+import { createEventId } from './event-utils'
 import ToolBox from './toolBox';
 
-export default function Demo ({ settledAppointments, unSettledAppointments, setSettledAppointments, setUnSettledAppointments, token, reFetch }) {
+export default function Demo ({ settledAppointments, unSettledAppointments, setSettledAppointments, setUnSettledAppointments, token, reFetch,
+    history, addToHistory, addAllToHistory, setHistory}) {
     console.log("SETTLED", settledAppointments);
     console.log("UNSETTLED", unSettledAppointments);
 
@@ -36,10 +37,10 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
         setCalAPI(calendarRef.current.getApi());
         // Use the calendarApi to interact with the FullCalendar API
         // For example, you can call calendarApi.next() to navigate to the next view
-        // let cal = calendarRef.current.getApi();
-        // cal.addEventSource({events: (info, successCallback, failureCallback)=>{
-        //     console.log("Settled appointments at Refetch", getAppointments());
-        //     successCallback(getAppointments())}});
+        let cal = calendarRef.current.getApi();
+        cal.addEventSource({events: (info, successCallback, failureCallback)=>{
+            console.log("Settled appointments at Refetch", getAppointments());
+            successCallback(getAppointments())}});
         // cal.refetchEvents();
       }, [calendarRef]);
 
@@ -216,6 +217,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
 
     const updateEvent = (appointment) => {
         console.log("Calling updateEvent", appointment)
+
         if (!appointment.settled) {
             handleEventChange({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
                 optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
@@ -225,6 +227,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             apps[index] = appointment;
             setUnSettledAppointments(apps);
         } else {
+            let rankFlag = false;
             const event = calAPI.getEventById(appointment.id);
             console.log("Event TO UPDATE", event);
             if (appointment.start != event.startStr) {
@@ -242,11 +245,26 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
                 }
                 if (value != event.extendedProps[key]) {
                     event.setExtendedProp(key, value);
+                    if (key == 'rank') {
+                        rankFlag = true;
+                        addToHistory(appointment);
+                        const newHistory = history.slice();
+                        const hisAppointment = structuredClone(appointment);
+                        hisAppointment.history = true;
+                        hisAppointment.id = "his";
+                        newHistory.push(hisAppointment);
+                        setHistory(newHistory);
+                    }
                 }
             });
             const apps = settledAppointments.slice();
             const index = apps.findIndex((app) => app.id === appointment.id);
-            apps[index] = appointment;
+            if (rankFlag) {
+                apps.splice(index, 1);
+                setUnSettledAppointments(unSettledAppointments.concat(appointment));
+            } else {
+                apps[index] = appointment;
+            }
             setSettledAppointments(apps);
         }
     }
@@ -256,7 +274,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             <Typography variant="body2" align="center">
             {eventInfo.timeText} {eventInfo.event.title}
                 <Modal
-                open={open ? open == eventInfo.event.id : false}
+                open={open && (!eventInfo.event.extendedProps.history) ? open == eventInfo.event.id : false}
                 onClose={handleClose}
                 sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
                 // slots={{ backdrop: Backdrop }}
@@ -354,7 +372,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
-            initialEvents={settledAppointments} // alternatively, use the `events` setting to fetch from a feed
+            initialEvents={history} // alternatively, use the `events` setting to fetch from a feed
             select={handleDateSelect}
             eventContent={renderEventContent} // custom render function
             eventClick={(clickInfo)=>{handleEventClick(clickInfo.event.id)}}

@@ -14,7 +14,7 @@ import withRoot from "/modules/withRoot";
 import { FORM_ERROR } from "final-form";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from 'react-redux';
-import { setAuthState, selectAuthState } from '/modules/model/auth';
+import { setAuthState, selectAuthState, setUserNameState } from '/modules/model/auth';
 
 function SignIn() {
   const router = useRouter();
@@ -47,6 +47,7 @@ function SignIn() {
     } else if (res.status === 200) {
       const tokenJson = await res.json();
       dispatch(setAuthState("Bearer " + tokenJson.token));
+      dispatch(setUserNameState(values.id));
       router.push("/");
     } else {
       setSent(false);

@@ -4,6 +4,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import TextField from '@mui/material/TextField';
+import { dateStringToObj } from '../lib/dateStringToObj';
 
 function DateTimeField(props) {
   const {
@@ -16,6 +17,15 @@ function DateTimeField(props) {
   const handleDateTimeChange = (newValue) => {
     onChange(newValue);
   };
+  React.useEffect(() => {
+    console.log("Affecting DateTimeField");
+    console.log("Value", value);
+    if (value && typeof value === "string") {
+      const newD = dateStringToObj(value);
+      console.log("New Date", newD);
+      handleDateTimeChange(newD);
+    }
+  });
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

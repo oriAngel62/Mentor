@@ -2,7 +2,7 @@ import Demo from "/modules/components/fullCalendarDemo";
 import { appointments } from '../public/demo_data/month_appointments';
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthState } from "/modules/model/auth";
 import withRoot from "/modules/withRoot";
 import { useRouter } from 'next/router';
@@ -10,6 +10,9 @@ import AppAppBar from "/modules/views/AppAppBar";
 import AppFooter from "/modules/views/AppFooter";
 import LoadingScreen from "/modules/views/loading";
 import { appointmentsToEvent } from "../modules/lib/eventAdapter";
+import { selectUserNameState } from "../modules/model/auth";
+import { addAllHistory, addHistory, selectHistoryState, setHistoryState } from "../modules/model/history";
+import { set } from "date-fns";
 
 
 const getAppointments = async (auth) => {
@@ -54,6 +57,16 @@ function Sched() {
   const router = useRouter();
   const [settledAppointments, setSettledAppointments] = useState([]);
   const [unSettledAppointments, setUnSettledAppointments] = useState([]);
+  const userName = useSelector(selectUserNameState);
+  const [history, setHistory] = useState(useSelector((state) => state.history[userName]));
+  const dispatch = useDispatch();
+  const addToHistory = (event) => {
+    dispatch(addHistory({user: userName, event: event}));
+  };
+  const addAllToHistory = (events) => {
+    dispatch(addAllHistory({user: userName, events: events}));
+  };
+
   let [fetching, setFetching] = useState(true);
   const reFetch = () => {
     setFetching(!fetching);
@@ -83,8 +96,9 @@ function Sched() {
     return (
       <React.Fragment>
         <AppAppBar />
-          <Demo settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments} reFetch={reFetch}
-                setSettledAppointments={setSettledAppointments} setUnSettledAppointments={setUnSettledAppointments} token={auth}/>
+          <Demo settledAppointments={settledAppointments} unSettledAppointments={unSettledAppointments} reFetch={reFetch} history={history}
+          addToHistory={addToHistory} addAllToHistory={addAllToHistory} setSettledAppointments={setSettledAppointments}
+          setUnSettledAppointments={setUnSettledAppointments} token={auth} setHistory={setHistory}/>
         <AppFooter />
       </React.Fragment>
     )

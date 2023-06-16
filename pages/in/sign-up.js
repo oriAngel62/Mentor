@@ -14,14 +14,16 @@ import FormFeedback from "/modules/form/FormFeedback";
 import withRoot from "/modules/withRoot";
 import { useRouter } from "next/router";
 import { FORM_ERROR } from "final-form";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthState } from '/modules/model/auth';
+import { newHistory } from "../../modules/model/history";
 
 function SignUp() {
   const router = useRouter();
   const [sent, setSent] = React.useState(false);
   const authState = useSelector(selectAuthState);
   console.log("Auth State SIGN-UP", authState);
+  const dispatch = useDispatch();
 
   const validate = (values) => {
     const errors = required(
@@ -55,6 +57,7 @@ function SignUp() {
       setSent(false);
       return { [FORM_ERROR]: "Server error" };
     } else if (res.status === 200) {
+      dispatch(newHistory(values.id));
       router.push("/in/sign-in");
     } else {
       setSent(false);
