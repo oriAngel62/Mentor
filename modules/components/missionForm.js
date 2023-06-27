@@ -209,7 +209,7 @@ export default function MissionForm({
                                       autoComplete="Start"
                                       label="Start"
                                       margin="normal"
-                                      defaultValue={appointment.start}
+                                      defaultValue={appointment.startStr ? appointment.startStr : appointment.start}
                                     />
                                     <b> _ </b>
                                     <Field
@@ -222,7 +222,7 @@ export default function MissionForm({
                                         autoComplete="End"
                                         label="End"
                                         margin="normal"
-                                        defaultValue={appointment.end}
+                                        defaultValue={appointment.endStr ? appointment.endStr : appointment.end}
                                     />
                                     <br />
                                     <br />
@@ -238,7 +238,9 @@ export default function MissionForm({
                                 autoComplete="Deadline"
                                 label="Deadline"
                                 margin="normal"
-                                defaultValue={appointment.title ? (appointment.extendedProps ? appointment.extendedProps.deadline : appointment.deadline) : null}
+                                defaultValue={appointment.title ? (appointment.extendedProps ?
+                                    (Object.prototype.toString.call(appointment.extendedProps.deadline) === '[object Date]' ? appointment.extendedProps.deadline.toISOString() : appointment.extendedProps.deadline) :
+                                    appointment.deadline) : null}
                             />
                             <br />
                             <br />

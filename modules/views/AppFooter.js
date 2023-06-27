@@ -65,6 +65,9 @@ export default function AppFooter() {
                             <Box component="li" sx={{ py: 0.5 }}>
                                 <Link href="/terms">Terms</Link>
                             </Box>
+                            <Box component="li" sx={{ py: 0.5 }}>
+                                <Link href="/privacy">Privacy</Link>
+                            </Box>
                         </Box>
                     </Grid>
 

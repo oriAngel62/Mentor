@@ -179,10 +179,16 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
         })
         .then((response) => {
             console.log("FETCH RESPONSE", response);
+            if (response || !response.ok) {
+                return {missions: []};
+            }
             return response.json();
         }).then((data) => {
             console.log("FETCH DATA", data);
             let missions = data.missions;
+            if (missions.length === 0) {
+                return;
+            }
             let newSettledAppointments = [];
             let newUnSettledAppointments = [];
             missions.forEach((mission) => {
@@ -196,7 +202,7 @@ export default function ToolBox({ settledAppointments, unSettledAppointments, ad
             setUnSettledAppointments(newUnSettledAppointments);
             // reFetch();
         });
-        
+        window.location.href = window.location.href;
         // if response is ok, then update the state settledAppointments to be with the new missions, and delete them from unSettledAppointments
         // or Refresh the page
     };

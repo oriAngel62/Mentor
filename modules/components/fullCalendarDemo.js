@@ -219,7 +219,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
         console.log("Calling updateEvent", appointment)
 
         if (!appointment.settled) {
-            handleEventChange({event: {title: appointment.title, extendedProps: {description: appointment.description, type: appointment.type,
+            handleEventChange({event: {title: appointment.title, id: appointment.id, extendedProps: {description: appointment.description, type: appointment.type,
                 optionalDays: appointment.optionalDays, optionalHours: appointment.optionalHours, settled: appointment.settled,
                 startStr: appointment.start, endStr: appointment.end, deadline: appointment.deadline, priority: appointment.priority, length: appointment.length,}}});
             const apps = unSettledAppointments.slice();
@@ -240,18 +240,20 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
                 event.setProp('title', appointment.title);
             }
             Object.entries(appointment).forEach(([key, value]) => {
-                if(key == 'start' || key == 'end' || key == 'id' || key == 'title') {
+                if(key == 'start' || key == 'end' || key == 'id' || key == 'title' || key == 'settled') {
                     return;
                 }
                 if (value != event.extendedProps[key]) {
                     event.setExtendedProp(key, value);
                     if (key == 'rank') {
                         rankFlag = true;
+                        event.setExtendedProp('settled', false);
                         addToHistory(appointment);
                         const newHistory = history.slice();
                         const hisAppointment = structuredClone(appointment);
                         hisAppointment.history = true;
                         hisAppointment.id = "his";
+                        hisAppointment.editable = false;
                         newHistory.push(hisAppointment);
                         setHistory(newHistory);
                     }
@@ -267,6 +269,7 @@ export default function Demo ({ settledAppointments, unSettledAppointments, setS
             }
             setSettledAppointments(apps);
         }
+        window.location.href = window.location.href;
     }
 
     const renderEventContent = (eventInfo) => {

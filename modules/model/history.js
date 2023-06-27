@@ -17,7 +17,7 @@ export const historySlice = createSlice({
       // immutable state based off those changes
       // {userName: [event1, event2, ...], userName2: [event1, event2, ...]}
       Object.entries(action.payload).forEach(([key, value]) => {
-        mappedVals = value.map((element) => {element.history = true;element.id = "his"; return element;})
+        mappedVals = value.map((element) => {element.history = true;element.id = "his"; element.editable = false; return element;})
         state[key] = mappedVals;
       });
     },
@@ -39,7 +39,7 @@ export const historySlice = createSlice({
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       // {user: userName, events: [ event1, event2, ...]}
-      const newVals = action.payload.events.forEach((element) => {element.history = true;element.id = "his"; return element;})
+      const newVals = action.payload.events.forEach((element) => {element.history = true;element.id = "his";element.editable = false; return element;})
       state[action.payload.user] = state[action.payload.user].concat(newVals);
   },
     newHistory: (state, action) => {
